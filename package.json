@@ -1,0 +1,51 @@
+{
+  "name": "ton-collection-edit-gui",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@hookstate/core": "^4.0.0-rc21",
+    "@hookstate/devtools": "4.0.0-rc21",
+    "@types/bn.js": "^5.1.0",
+    "autoprefixer": "^10.4.4",
+    "bn.js": "^5.2.1",
+    "buffer": "^6.0.3",
+    "clipboardy": "^3.0.0",
+    "clsx": "^1.2.1",
+    "postcss": "^8.4.16",
+    "qr-code-styling": "1.6.0-rc.1",
+    "react": "^18.1.0",
+    "react-async-hook": "^4.0.0",
+    "react-dom": "^18.1.0",
+    "react-jazzicon": "^1.0.4",
+    "react-qr-code": "^2.0.7",
+    "reactjs-popup": "^2.0.5",
+    "tailwindcss": "^3.1.8",
+    "ton": "^12.2.8",
+    "ton-contract-executor": "^0.6.2",
+    "ton-crypto": "^3.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.35",
+    "@types/react": "^18.0.9",
+    "@types/react-dom": "^18.0.4",
+    "@typescript-eslint/eslint-plugin": "^5.18.0",
+    "@typescript-eslint/parser": "^5.18.0",
+    "@vitejs/plugin-react": "^2.1.0",
+    "eslint": "^8.12.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-n": "^15.6.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-promise": "^6.0.0",
+    "eslint-plugin-react": "^7.29.4",
+    "prettier": "^2.6.2",
+    "typescript": "^4.8.3",
+    "vite": "^3.1.0"
+  }
+}

@@ -3,7 +3,7 @@ import { TonClient } from 'ton'
 
 const TonConnection = hookstate<TonClient>(
   new TonClient({
-    endpoint: 'https://toncenter.com/api/v2/jsonRPC',
+    endpoint: 'https://mainnet.tonhubapi.com/jsonRPC',
   })
 )
 

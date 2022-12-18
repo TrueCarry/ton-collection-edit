@@ -16,7 +16,7 @@ interface CollectionInfo {
 export function IndexPage() {
   const [collectionAddress, setCollectionAddress] = useState('')
   const [apiKey, setApiKey] = useState('')
-  const [endpoint, setEndpoint] = useState('https://toncenter.com/api/v2/jsonRPC')
+  const [endpoint, setEndpoint] = useState('https://mainnet.tonhubapi.com/jsonRPC')
   const [collectionInfo, setCollectionInfo] = useState<CollectionInfo>({
     content: '',
     base: '',
@@ -243,6 +243,21 @@ export function IndexPage() {
                   setCollectionInfo({
                     ...collectionInfo,
                     content: e.target.value,
+                  })
+                }
+              />
+            </div>
+            <div>
+              <label htmlFor="collectionBase">Collection Base:</label>
+              <input
+                className="w-full px-2 py-2 bg-gray-200 rounded"
+                type="text"
+                id="collectionBase"
+                value={collectionInfo?.base}
+                onChange={(e) =>
+                  setCollectionInfo({
+                    ...collectionInfo,
+                    base: e.target.value,
                   })
                 }
               />

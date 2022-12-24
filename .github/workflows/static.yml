@@ -32,8 +32,8 @@ jobs:
         uses: actions/checkout@v3
       - name: Build
         run: |
-          pnpm
-          pnpm build
+          npm
+          npm run build
       - name: Setup Pages
         uses: actions/configure-pages@v2
       - name: Upload artifact

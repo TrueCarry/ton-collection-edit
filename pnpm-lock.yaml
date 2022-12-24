@@ -31,6 +31,7 @@ specifiers:
   react-dom: ^18.1.0
   react-jazzicon: ^1.0.4
   react-qr-code: ^2.0.7
+  react-tabs: ^6.0.0
   reactjs-popup: ^2.0.5
   tailwindcss: ^3.1.8
   ton: ^12.2.8
@@ -55,6 +56,7 @@ dependencies:
   react-dom: 18.2.0_react@18.2.0
   react-jazzicon: 1.0.4_biqbaboplfbrettd7655fr4n2y
   react-qr-code: 2.0.11_react@18.2.0
+  react-tabs: 6.0.0_react@18.2.0
   reactjs-popup: 2.0.5_biqbaboplfbrettd7655fr4n2y
   tailwindcss: 3.2.4_postcss@8.4.20
   ton: 12.2.8
@@ -2620,6 +2622,16 @@ packages:
     resolution: {integrity: sha512-wViHqhAd8OHeLS/IRMJjTSDHF3U9eWi62F/MledQGPdJGDhodXJ9PBLNGr6WWL7qlH12Mt3TyTpbS+hGXMjCzQ==}
     engines: {node: '>=0.10.0'}
     dev: true
+
+  /react-tabs/6.0.0_react@18.2.0:
+    resolution: {integrity: sha512-8jKLKrlwxmn5/+xsa76yi27ZdB8E/WhlhQZw739O5UlOeUGtVoVeWnpqIewv/KbjTw7gQf/uA51zWUNt4IVygQ==}
+    peerDependencies:
+      react: ^18.0.0
+    dependencies:
+      clsx: 1.2.1
+      prop-types: 15.8.1
+      react: 18.2.0
+    dev: false
 
   /react/18.2.0:
     resolution: {integrity: sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==}

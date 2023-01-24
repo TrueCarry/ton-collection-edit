@@ -3,6 +3,7 @@ import { EditNftCollection } from '../EditNftCollection'
 import { EditNftSingle } from '../EditNftSingle'
 import { Tab, TabList, TabPanel, Tabs } from 'react-tabs'
 import 'react-tabs/style/react-tabs.css'
+import { EditNftCollectionOwner } from '../EditNftCollectionOwner'
 
 export function IndexPage() {
   return (
@@ -14,11 +15,15 @@ export function IndexPage() {
       <Tabs>
         <TabList>
           <Tab>Edit Collection</Tab>
+          <Tab>Edit Collection Owner</Tab>
           <Tab>Edit Single Nft</Tab>
         </TabList>
 
         <TabPanel>
           <EditNftCollection />
+        </TabPanel>
+        <TabPanel>
+          <EditNftCollectionOwner />
         </TabPanel>
         <TabPanel>
           <EditNftSingle />

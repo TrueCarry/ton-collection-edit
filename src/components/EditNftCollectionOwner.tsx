@@ -46,9 +46,10 @@ export function EditNftCollectionOwner() {
   }, [collectionAddress])
 
   const editContent = useMemo(() => {
-    return Queries.changeOwner({
+    const query = Queries.changeOwner({
       newOwner: collectionInfo.owner,
     })
+    return query
   }, [collectionInfo])
 
   return (

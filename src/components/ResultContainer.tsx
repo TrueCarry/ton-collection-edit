@@ -139,7 +139,8 @@ export function ResultContainer({
         </div>
       </div>
       <div>
-        Body: <input type="text" defaultValue={binData} disabled className="w-full" />
+        <div>Body:</div>
+        <code className="bg-gray-100">{binData}</code>
       </div>
     </div>
   )

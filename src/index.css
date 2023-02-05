@@ -14,7 +14,7 @@
 }
 
 * {
-  font-family: Mulish, "Open Sans", sans-serif;
+  font-family: Mulish, "Open Sans", sans-serif !important;
 }
 
 body {

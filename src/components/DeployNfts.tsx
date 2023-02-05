@@ -187,7 +187,7 @@ export function DeployNfts() {
       messages: mintContent,
       validUntil: Math.floor(Date.now()) + 300,
     })
-  }, mintContent)
+  }, [mintContent])
 
   return (
     <div className="container mx-auto">

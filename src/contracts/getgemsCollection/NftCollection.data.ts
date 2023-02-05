@@ -1,5 +1,14 @@
-import { Address, Cell, serializeDict } from 'ton'
-import BN from 'bn.js'
+import {
+  Address,
+  beginCell,
+  Cell,
+  contractAddress,
+  Dictionary,
+  DictionaryValue,
+  StateInit,
+  storeStateInit,
+} from 'ton-core'
+import { NftCollectionCodeCell } from './NftCollection.source'
 import { encodeOffChainContent } from '../nft-content/nftContent'
 
 export type RoyaltyParams = {
@@ -10,11 +19,75 @@ export type RoyaltyParams = {
 
 export type NftCollectionData = {
   ownerAddress: Address
-  nextItemIndex: number | BN
+  nextItemIndex: bigint
   collectionContent: string
   commonContent: string
   nftItemCode: Cell
   royaltyParams: RoyaltyParams
+}
+
+export type CollectionMintItemInput = {
+  passAmount: bigint
+  index: number
+  ownerAddress: Address
+  content: string
+}
+
+export type CollectionEditableMintItemInput = {
+  passAmount: bigint
+  index: number
+  ownerAddress: Address
+  content: string
+  editorAddress: Address
+}
+
+export const MintDictValue: DictionaryValue<CollectionMintItemInput> = {
+  serialize(src, builder) {
+    const nftItemMessage = beginCell()
+
+    const itemContent = beginCell()
+    itemContent.storeBuffer(Buffer.from(src.content))
+
+    nftItemMessage.storeAddress(src.ownerAddress)
+    nftItemMessage.storeRef(itemContent)
+
+    builder.storeCoins(src.passAmount)
+    builder.storeRef(nftItemMessage)
+  },
+  parse() {
+    return {
+      passAmount: 0n,
+      index: 0,
+      content: '',
+      ownerAddress: new Address(0, Buffer.from([])),
+      editorAddress: new Address(0, Buffer.from([])),
+    }
+  },
+}
+
+export const MintEditableDictValue: DictionaryValue<CollectionEditableMintItemInput> = {
+  serialize(src, builder) {
+    const nftItemMessage = beginCell()
+
+    const itemContent = beginCell()
+    itemContent.storeBuffer(Buffer.from(src.content))
+
+    nftItemMessage.storeAddress(src.ownerAddress)
+    nftItemMessage.storeAddress(src.editorAddress)
+    nftItemMessage.storeRef(itemContent)
+
+    builder.storeCoins(src.passAmount)
+    builder.storeRef(nftItemMessage)
+  },
+  parse() {
+    return {
+      passAmount: 0n,
+      index: 0,
+      content: '',
+      ownerAddress: new Address(0, Buffer.from([])),
+      editorAddress: new Address(0, Buffer.from([])),
+    }
+  },
 }
 
 // default#_ royalty_factor:uint16 royalty_base:uint16 royalty_address:MsgAddress = RoyaltyParams;
@@ -24,33 +97,51 @@ export type NftCollectionData = {
 //           royalty_params:^RoyaltyParams
 //           = Storage;
 
-export function buildNftCollectionDataCell(data: NftCollectionData) {
-  const dataCell = new Cell()
+export function buildNftCollectionDataCell(data: NftCollectionData): Cell {
+  const dataCell = beginCell()
 
-  dataCell.bits.writeAddress(data.ownerAddress)
-  dataCell.bits.writeUint(data.nextItemIndex, 64)
+  dataCell.storeAddress(data.ownerAddress)
+  dataCell.storeUint(data.nextItemIndex, 64)
 
-  const contentCell = new Cell()
+  const contentCell = beginCell()
 
   const collectionContent = encodeOffChainContent(data.collectionContent)
 
-  const commonContent = new Cell()
-  commonContent.bits.writeBuffer(Buffer.from(data.commonContent))
-  // commonContent.bits.writeString(data.commonContent)
+  const commonContent = beginCell()
+  commonContent.storeBuffer(Buffer.from(data.commonContent))
+  // commonContent.storeString(data.commonContent)
 
-  contentCell.refs.push(collectionContent)
-  contentCell.refs.push(commonContent)
-  dataCell.refs.push(contentCell)
+  contentCell.storeRef(collectionContent)
+  contentCell.storeRef(commonContent.asCell())
+  dataCell.storeRef(contentCell)
 
-  dataCell.refs.push(data.nftItemCode)
+  dataCell.storeRef(data.nftItemCode)
 
-  const royaltyCell = new Cell()
-  royaltyCell.bits.writeUint(data.royaltyParams.royaltyFactor, 16)
-  royaltyCell.bits.writeUint(data.royaltyParams.royaltyBase, 16)
-  royaltyCell.bits.writeAddress(data.royaltyParams.royaltyAddress)
-  dataCell.refs.push(royaltyCell)
+  const royaltyCell = beginCell()
+  royaltyCell.storeUint(data.royaltyParams.royaltyFactor, 16)
+  royaltyCell.storeUint(data.royaltyParams.royaltyBase, 16)
+  royaltyCell.storeAddress(data.royaltyParams.royaltyAddress)
+  dataCell.storeRef(royaltyCell)
 
-  return dataCell
+  return dataCell.endCell()
+}
+
+export function buildNftCollectionStateInit(conf: NftCollectionData) {
+  const dataCell = buildNftCollectionDataCell(conf)
+  const stateInit: StateInit = {
+    code: NftCollectionCodeCell,
+    data: dataCell,
+  }
+
+  const stateInitCell = beginCell().store(storeStateInit(stateInit)).endCell()
+
+  const address = contractAddress(0, { code: NftCollectionCodeCell, data: dataCell })
+
+  return {
+    stateInit: stateInitCell,
+    stateInitMessage: stateInit,
+    address,
+  }
 }
 
 export const OperationCodes = {
@@ -62,86 +153,128 @@ export const OperationCodes = {
   GetRoyaltyParamsResponse: 0xa8cb00ad,
 }
 
-export type CollectionMintItemInput = {
-  passAmount: BN
-  index: number
-  ownerAddress: Address
-  content: string
-}
-
 export const Queries = {
   mint: (params: {
     queryId?: number
-    passAmount: BN
+    passAmount: bigint
     itemIndex: number
     itemOwnerAddress: Address
     itemContent: string
   }) => {
-    const msgBody = new Cell()
+    const msgBody = beginCell()
 
-    msgBody.bits.writeUint(OperationCodes.Mint, 32)
-    msgBody.bits.writeUint(params.queryId || 0, 64)
-    msgBody.bits.writeUint(params.itemIndex, 64)
-    msgBody.bits.writeCoins(params.passAmount)
+    msgBody.storeUint(OperationCodes.Mint, 32)
+    msgBody.storeUint(params.queryId || 0, 64)
+    msgBody.storeUint(params.itemIndex, 64)
+    msgBody.storeCoins(params.passAmount)
 
-    const itemContent = new Cell()
-    // itemContent.bits.writeString(params.itemContent)
-    itemContent.bits.writeBuffer(Buffer.from(params.itemContent))
+    const itemContent = beginCell()
+    // itemContent.storeString(params.itemContent)
+    itemContent.storeBuffer(Buffer.from(params.itemContent))
 
-    const nftItemMessage = new Cell()
+    const nftItemMessage = beginCell()
 
-    nftItemMessage.bits.writeAddress(params.itemOwnerAddress)
-    nftItemMessage.refs.push(itemContent)
+    nftItemMessage.storeAddress(params.itemOwnerAddress)
+    nftItemMessage.storeRef(itemContent)
 
-    msgBody.refs.push(nftItemMessage)
+    msgBody.storeRef(nftItemMessage)
 
-    return msgBody
+    return msgBody.endCell()
   },
   batchMint: (params: { queryId?: number; items: CollectionMintItemInput[] }) => {
     if (params.items.length > 250) {
       throw new Error('Too long list')
     }
 
-    const itemsMap = new Map<string, CollectionMintItemInput>()
-
+    const dict = Dictionary.empty(Dictionary.Keys.Uint(64), MintDictValue)
     for (const item of params.items) {
-      itemsMap.set(item.index.toString(10), item)
+      dict.set(item.index, item)
     }
 
-    const dictCell = serializeDict(itemsMap, 64, (src, cell) => {
-      const nftItemMessage = new Cell()
+    const msgBody = beginCell()
 
-      const itemContent = new Cell()
-      // itemContent.bits.writeString(packages.content)
-      itemContent.bits.writeBuffer(Buffer.from(src.content))
+    msgBody.storeUint(OperationCodes.BatchMint, 32)
+    msgBody.storeUint(params.queryId || 0, 64)
+    msgBody.storeDict(dict)
 
-      nftItemMessage.bits.writeAddress(src.ownerAddress)
-      nftItemMessage.refs.push(itemContent)
-
-      cell.bits.writeCoins(src.passAmount)
-      cell.refs.push(nftItemMessage)
-    })
-
-    const msgBody = new Cell()
-
-    msgBody.bits.writeUint(OperationCodes.BatchMint, 32)
-    msgBody.bits.writeUint(params.queryId || 0, 64)
-    msgBody.refs.push(dictCell)
-
-    return msgBody
+    return msgBody.endCell()
   },
+
+  mintEditable: (params: { queryId?: number; item: CollectionEditableMintItemInput }) => {
+    const msgBody = beginCell()
+
+    msgBody.storeUint(OperationCodes.Mint, 32)
+    msgBody.storeUint(params.queryId || 0, 64)
+    msgBody.storeUint(params.item.index, 64)
+    msgBody.storeCoins(params.item.passAmount)
+
+    const itemContent = beginCell()
+    // itemContent.storeString(params.itemContent)
+    itemContent.storeBuffer(Buffer.from(params.item.content))
+
+    const nftItemMessage = beginCell()
+
+    nftItemMessage.storeAddress(params.item.ownerAddress)
+    nftItemMessage.storeAddress(params.item.editorAddress)
+    nftItemMessage.storeRef(itemContent)
+
+    msgBody.storeRef(nftItemMessage)
+
+    return msgBody.endCell()
+  },
+  batchMintEditable: (params: { queryId?: number; items: CollectionEditableMintItemInput[] }) => {
+    if (params.items.length > 250) {
+      throw new Error('Too long list')
+    }
+
+    // let itemsMap = new Map<string, CollectionEditableMintItemInput>()
+
+    // for (let item of params.items) {
+    //     itemsMap.set(item.index.toString(10), item)
+    // }
+
+    // let dictCell = serializeDict(itemsMap, 64, (src, cell) => {
+    //     let nftItemMessage = beginCell()
+
+    //     let itemContent = beginCell()
+    //     // itemContent.storeString(packages.content)
+    //     itemContent.storeBuffer(Buffer.from(src.content))
+
+    //     nftItemMessage.storeAddress(src.ownerAddress)
+    //     nftItemMessage.storeAddress(src.editorAddress)
+    //     nftItemMessage.storeRef(itemContent)
+
+    //     cell.storeCoins(src.passAmount)
+    //     cell.storeRef(nftItemMessage)
+    // })
+
+    const dict = Dictionary.empty(Dictionary.Keys.Uint(64), MintEditableDictValue)
+
+    for (const item of params.items) {
+      dict.set(item.index, item)
+    }
+
+    const msgBody = beginCell()
+
+    msgBody.storeUint(OperationCodes.BatchMint, 32)
+    msgBody.storeUint(params.queryId || 0, 64)
+    msgBody.storeDict(dict)
+
+    return msgBody.endCell()
+  },
+
   changeOwner: (params: { queryId?: number; newOwner: Address }) => {
-    const msgBody = new Cell()
-    msgBody.bits.writeUint(OperationCodes.ChangeOwner, 32)
-    msgBody.bits.writeUint(params.queryId || 0, 64)
-    msgBody.bits.writeAddress(params.newOwner)
-    return msgBody
+    const msgBody = beginCell()
+    msgBody.storeUint(OperationCodes.ChangeOwner, 32)
+    msgBody.storeUint(params.queryId || 0, 64)
+    msgBody.storeAddress(params.newOwner)
+    return msgBody.endCell()
   },
   getRoyaltyParams: (params: { queryId?: number }) => {
-    const msgBody = new Cell()
-    msgBody.bits.writeUint(OperationCodes.GetRoyaltyParams, 32)
-    msgBody.bits.writeUint(params.queryId || 0, 64)
-    return msgBody
+    const msgBody = beginCell()
+    msgBody.storeUint(OperationCodes.GetRoyaltyParams, 32)
+    msgBody.storeUint(params.queryId || 0, 64)
+    return msgBody.endCell()
   },
   editContent: (params: {
     queryId?: number
@@ -149,29 +282,29 @@ export const Queries = {
     commonContent: string
     royaltyParams: RoyaltyParams
   }) => {
-    const msgBody = new Cell()
-    msgBody.bits.writeUint(OperationCodes.EditContent, 32)
-    msgBody.bits.writeUint(params.queryId || 0, 64)
+    const msgBody = beginCell()
+    msgBody.storeUint(OperationCodes.EditContent, 32)
+    msgBody.storeUint(params.queryId || 0, 64)
 
-    const royaltyCell = new Cell()
-    royaltyCell.bits.writeUint(params.royaltyParams.royaltyFactor, 16)
-    royaltyCell.bits.writeUint(params.royaltyParams.royaltyBase, 16)
-    royaltyCell.bits.writeAddress(params.royaltyParams.royaltyAddress)
+    const royaltyCell = beginCell()
+    royaltyCell.storeUint(params.royaltyParams.royaltyFactor, 16)
+    royaltyCell.storeUint(params.royaltyParams.royaltyBase, 16)
+    royaltyCell.storeAddress(params.royaltyParams.royaltyAddress)
 
-    const contentCell = new Cell()
+    const contentCell = beginCell()
 
     const collectionContent = encodeOffChainContent(params.collectionContent)
 
-    const commonContent = new Cell()
-    // commonContent.bits.writeString(params.commonContent)
-    commonContent.bits.writeBuffer(Buffer.from(params.commonContent))
+    const commonContent = beginCell()
+    // commonContent.storeString(params.commonContent)
+    commonContent.storeBuffer(Buffer.from(params.commonContent))
 
-    contentCell.refs.push(collectionContent)
-    contentCell.refs.push(commonContent)
+    contentCell.storeRef(collectionContent)
+    contentCell.storeRef(commonContent)
 
-    msgBody.refs.push(contentCell)
-    msgBody.refs.push(royaltyCell)
+    msgBody.storeRef(contentCell)
+    msgBody.storeRef(royaltyCell)
 
-    return msgBody
+    return msgBody.endCell()
   },
 }

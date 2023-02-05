@@ -2,36 +2,49 @@ import { Queries } from '@/contracts/getgemsCollection/NftCollection.data'
 import { useTonClient } from '@/store/tonClient'
 import BN from 'bn.js'
 import { useEffect, useMemo, useState } from 'react'
-import { Address, Cell } from 'ton'
+import { Address, Cell, TupleItemCell, TupleItemInt } from 'ton'
+import { TupleItemSlice } from 'ton-core/dist/tuple/tuple'
 import { ResultContainer } from './ResultContainer'
 
 interface CollectionInfo {
   owner: Address
 }
+
+const zeroAddress = new Address(0, Buffer.from([]))
+
 export function EditNftCollectionOwner() {
   const [collectionAddress, setCollectionAddress] = useState('')
   const [collectionInfo, setCollectionInfo] = useState<CollectionInfo>({
-    owner: Address.parse('0:0'),
+    owner: new Address(0, Buffer.from([])),
   })
 
   const tonClient = useTonClient()
 
   const updateInfo = async () => {
     setCollectionInfo({
-      owner: Address.parse('0:0'),
+      owner: new Address(0, Buffer.from([])),
     })
 
-    const address = Address.parse(collectionAddress)
+    let address: Address
+    try {
+      address = Address.parse(collectionAddress)
+    } catch (e) {
+      return
+    }
 
     const contentInfo = await tonClient.value.callGetMethod(address, 'get_collection_data')
-    const [, , /* collectionContent */ ownerAddress] = contentInfo.stack as [
-      string[], // bn
-      any[], // cell
-      any[] // slice
+    const [, , /* collectionContent */ ownerAddress] = [
+      contentInfo.stack.pop(),
+      contentInfo.stack.pop(),
+      contentInfo.stack.pop(),
+    ] as [
+      TupleItemInt, // bn
+      TupleItemCell, // cell
+      TupleItemSlice // slice
     ]
 
-    const addressCell = Cell.fromBoc(Buffer.from(ownerAddress[1].bytes, 'base64'))[0]
-    const owner = addressCell.beginParse().readAddress()
+    // const addressCell = Cell.fromBoc(Buffer.from(ownerAddress[1].bytes, 'base64'))[0]
+    const owner = ownerAddress.cell.beginParse().loadAddress()
     if (!owner) {
       throw new Error('unknown owner')
     }
@@ -46,6 +59,9 @@ export function EditNftCollectionOwner() {
   }, [collectionAddress])
 
   const editContent = useMemo(() => {
+    if (!collectionInfo || !collectionInfo.owner || collectionInfo.owner.equals(zeroAddress)) {
+      return new Cell()
+    }
     const query = Queries.changeOwner({
       newOwner: collectionInfo.owner,
     })
@@ -76,7 +92,7 @@ export function EditNftCollectionOwner() {
               className="w-full px-2 py-2 bg-gray-200 rounded"
               type="text"
               id="royaltyAddress"
-              value={collectionInfo.owner.toFriendly({
+              value={collectionInfo.owner.toString({
                 bounceable: true,
                 urlSafe: true,
               })}

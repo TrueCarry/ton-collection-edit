@@ -3,7 +3,8 @@ import { decodeOffChainContent } from '@/contracts/nft-content/nftContent'
 import { useTonClient } from '@/store/tonClient'
 import BN from 'bn.js'
 import { useEffect, useMemo, useState } from 'react'
-import { Address, Cell } from 'ton'
+import { Address, Cell, TupleItemInt } from 'ton-core'
+import { TupleItemCell, TupleItemSlice } from 'ton-core/dist/tuple/tuple'
 import { ResultContainer } from './ResultContainer'
 
 interface CollectionInfo {
@@ -19,7 +20,7 @@ export function EditNftCollection() {
     royalty: {
       royaltyFactor: 0,
       royaltyBase: 0,
-      royaltyAddress: Address.parse('0:0'),
+      royaltyAddress: new Address(0, Buffer.from([])),
     },
   })
 
@@ -32,17 +33,26 @@ export function EditNftCollection() {
       royalty: {
         royaltyFactor: 0,
         royaltyBase: 0,
-        royaltyAddress: Address.parse('0:0'),
+        royaltyAddress: new Address(0, Buffer.from([])),
       },
     })
 
-    const address = Address.parse(collectionAddress)
+    let address: Address
+    try {
+      address = Address.parse(collectionAddress)
+    } catch (e) {
+      return
+    }
     const info = await tonClient.value.callGetMethod(address, 'royalty_params')
 
-    const [royaltyFactor, royaltyBase, royaltyAddress] = info.stack as [string[], string[], any[]]
+    const [royaltyFactor, royaltyBase, royaltyAddress] = [
+      info.stack.pop(),
+      info.stack.pop(),
+      info.stack.pop(),
+    ] as [TupleItemInt, TupleItemInt, TupleItemSlice]
     console.log('info', info, royaltyAddress[1])
     const addressCell = Cell.fromBoc(Buffer.from(royaltyAddress[1].bytes, 'base64'))[0]
-    const royaltyOwner = addressCell.beginParse().readAddress()
+    const royaltyOwner = addressCell.beginParse().loadAddress()
     if (!royaltyOwner) {
       return
     }
@@ -54,20 +64,29 @@ export function EditNftCollection() {
     }
 
     const contentInfo = await tonClient.value.callGetMethod(address, 'get_collection_data')
-    const [, collectionContent] = contentInfo.stack as [
-      string[], // bn
-      any[], // cell
-      any[] // slice
+    const [, collectionContent] = [
+      contentInfo.stack.pop(),
+      contentInfo.stack.pop(),
+      contentInfo.stack.pop(),
+    ] as [
+      TupleItemInt, // bn
+      TupleItemCell, // cell
+      TupleItemSlice // slice
     ]
-    const contentCell = Cell.fromBoc(Buffer.from(collectionContent[1].bytes, 'base64'))[0]
-    const content = decodeOffChainContent(contentCell)
+    // const contentCell = Cell.fromBoc(Buffer.from(collectionContent[1].bytes, 'base64'))[0]
+    const content = decodeOffChainContent(collectionContent.cell)
 
     const baseInfo = await tonClient.value.callGetMethod(address, 'get_nft_content', [
-      ['num', '0'],
-      ['tvm.Cell', new Cell().toBoc({ idx: false }).toString('base64')],
+      {
+        type: 'int',
+        value: 0n,
+      },
+      { type: 'cell', cell: new Cell() },
+      // ['num', '0'],
+      // ['tvm.Cell', new Cell().toBoc({ idx: false }).toString('base64')],
     ])
-    const baseCell = Cell.fromBoc(Buffer.from(baseInfo.stack[0][1].bytes, 'base64'))[0]
-    const baseContent = decodeOffChainContent(baseCell)
+    // const baseCell = Cell.fromBoc(Buffer.from(baseInfo.stack[0][1].bytes, 'base64'))[0]
+    const baseContent = decodeOffChainContent((baseInfo.stack.pop() as TupleItemCell).cell)
     console.log('baseInfo', baseInfo, baseContent)
 
     setCollectionInfo({
@@ -201,7 +220,7 @@ export function EditNftCollection() {
                 className="w-full px-2 py-2 bg-gray-200 rounded"
                 type="text"
                 id="royaltyAddress"
-                value={collectionInfo.royalty.royaltyAddress.toFriendly({
+                value={collectionInfo.royalty.royaltyAddress.toString({
                   bounceable: true,
                   urlSafe: true,
                 })}

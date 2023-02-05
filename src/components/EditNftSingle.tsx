@@ -3,7 +3,8 @@ import { decodeOffChainContent, encodeOffChainContent } from '@/contracts/nft-co
 import { useTonClient } from '@/store/tonClient'
 import BN from 'bn.js'
 import { useEffect, useMemo, useState } from 'react'
-import { Address, Cell } from 'ton'
+import { Address, beginCell, Cell, TupleItemInt } from 'ton'
+import { TupleItemCell, TupleItemSlice } from 'ton-core/dist/tuple/tuple'
 import { ResultContainer } from './ResultContainer'
 
 interface NftInfo {
@@ -18,21 +19,21 @@ function CreateNftEditBody(
   royaltyAddress: Address,
   queryId?: number
 ) {
-  const msgBody = new Cell()
-  msgBody.bits.writeUint(0x1a0b9d51, 32)
-  msgBody.bits.writeUint(queryId || 0, 64)
+  const msgBody = beginCell()
+  msgBody.storeUint(0x1a0b9d51, 32)
+  msgBody.storeUint(queryId || 0, 64)
 
-  const royaltyCell = new Cell()
-  royaltyCell.bits.writeUint(royaltyFactor, 16)
-  royaltyCell.bits.writeUint(royaltyBase, 16)
-  royaltyCell.bits.writeAddress(royaltyAddress)
+  const royaltyCell = beginCell()
+  royaltyCell.storeUint(royaltyFactor, 16)
+  royaltyCell.storeUint(royaltyBase, 16)
+  royaltyCell.storeAddress(royaltyAddress)
 
   const contentCell = encodeOffChainContent(itemContentUri)
 
-  msgBody.refs.push(contentCell)
-  msgBody.refs.push(royaltyCell)
+  msgBody.storeRef(contentCell)
+  msgBody.storeRef(royaltyCell)
 
-  return msgBody
+  return msgBody.endCell()
 }
 
 export function EditNftSingle() {
@@ -44,7 +45,7 @@ export function EditNftSingle() {
     royalty: {
       royaltyFactor: 0,
       royaltyBase: 0,
-      royaltyAddress: Address.parse('0:0'),
+      royaltyAddress: new Address(0, Buffer.from([])),
     },
   })
 
@@ -54,17 +55,27 @@ export function EditNftSingle() {
       royalty: {
         royaltyFactor: 0,
         royaltyBase: 0,
-        royaltyAddress: Address.parse('0:0'),
+        royaltyAddress: new Address(0, Buffer.from([])),
       },
     })
 
-    const address = Address.parse(nftAddress)
+    let address: Address
+    try {
+      address = Address.parse(nftAddress)
+    } catch (e) {
+      return
+    }
+
     const info = await tonClient.value.callGetMethod(address, 'royalty_params')
 
-    const [royaltyFactor, royaltyBase, royaltyAddress] = info.stack as [string[], string[], any[]]
+    const [royaltyFactor, royaltyBase, royaltyAddress] = [
+      info.stack.pop(),
+      info.stack.pop(),
+      info.stack.pop(),
+    ] as [TupleItemInt, TupleItemInt, TupleItemSlice]
     console.log('info', info, royaltyAddress[1])
-    const addressCell = Cell.fromBoc(Buffer.from(royaltyAddress[1].bytes, 'base64'))[0]
-    const royaltyOwner = addressCell.beginParse().readAddress()
+    // const addressCell = Cell.fromBoc(Buffer.from(royaltyAddress[1].bytes, 'base64'))[0]
+    const royaltyOwner = royaltyAddress.cell.asSlice().loadAddress()
     if (!royaltyOwner) {
       return
     }
@@ -76,15 +87,21 @@ export function EditNftSingle() {
     }
 
     const contentInfo = await tonClient.value.callGetMethod(address, 'get_nft_data')
-    const [, , , , nftContent] = contentInfo.stack as [
-      string[], // bn
-      string[], // bn
-      string[], // bn
-      any[], // cell
-      any[] // slice
+    const [, , , , nftContent] = [
+      contentInfo.stack.pop(),
+      contentInfo.stack.pop(),
+      contentInfo.stack.pop(),
+      contentInfo.stack.pop(),
+      contentInfo.stack.pop(),
+    ] as [
+      TupleItemInt,
+      TupleItemInt,
+      TupleItemInt,
+      TupleItemCell, // cell
+      TupleItemSlice // slice
     ]
-    const contentCell = Cell.fromBoc(Buffer.from(nftContent[1].bytes, 'base64'))[0]
-    const content = decodeOffChainContent(contentCell)
+    // const contentCell = Cell.fromBoc(Buffer.from(nftContent[1].bytes, 'base64'))[0]
+    const content = decodeOffChainContent(nftContent.cell)
 
     setNftInfo({
       content,
@@ -205,7 +222,7 @@ export function EditNftSingle() {
             className="w-full px-2 py-2 bg-gray-200 rounded"
             type="text"
             id="royaltyAddress"
-            value={nftInfo.royalty.royaltyAddress.toFriendly({
+            value={nftInfo.royalty.royaltyAddress.toString({
               bounceable: true,
               urlSafe: true,
             })}
@@ -229,7 +246,12 @@ export function EditNftSingle() {
         </button>
       </div>
 
-      <ResultContainer address={nftAddress} cell={editContent} amount={new BN('10000000')} />
+      <ResultContainer
+        address={nftAddress}
+        cell={editContent}
+        amount={new BN('10000000')}
+        init={new Cell()}
+      />
     </div>
   )
 }

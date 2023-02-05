@@ -1,4 +1,4 @@
-import { Cell } from 'ton'
+import { beginCell, Cell } from 'ton-core'
 
 const OFF_CHAIN_CONTENT_PREFIX = 0x01
 
@@ -9,7 +9,11 @@ export function flattenSnakeCell(cell: Cell) {
 
   while (c) {
     const cs = c.beginParse()
-    const data = cs.readRemainingBytes()
+    if (cs.remainingBits % 8 !== 0) {
+      throw Error('Number remaining of bits is not multiply of 8')
+    }
+
+    const data = cs.loadBuffer(cs.remainingBits / 8)
     res = Buffer.concat([res, data])
     c = c.refs[0]
   }
@@ -26,24 +30,32 @@ function bufferToChunks(buff: Buffer, chunkSize: number) {
   return chunks
 }
 
-export function makeSnakeCell(data: Buffer) {
+export function makeSnakeCell(data: Buffer): Cell {
   const chunks = bufferToChunks(data, 127)
-  const rootCell = new Cell()
-  let curCell = rootCell
 
-  for (let i = 0; i < chunks.length; i++) {
+  if (chunks.length === 0) {
+    return beginCell().endCell()
+  }
+
+  if (chunks.length === 1) {
+    return beginCell().storeBuffer(chunks[0]).endCell()
+  }
+
+  let curCell = beginCell()
+
+  for (let i = chunks.length - 1; i >= 0; i--) {
     const chunk = chunks[i]
 
-    curCell.bits.writeBuffer(chunk)
+    curCell.storeBuffer(chunk)
 
-    if (chunks[i + 1]) {
-      const nextCell = new Cell()
-      curCell.refs.push(nextCell)
+    if (i - 1 >= 0) {
+      const nextCell = beginCell()
+      nextCell.storeRef(curCell)
       curCell = nextCell
     }
   }
 
-  return rootCell
+  return curCell.endCell()
 }
 
 export function encodeOffChainContent(content: string) {

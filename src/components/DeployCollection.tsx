@@ -1,97 +1,55 @@
-import { Queries, RoyaltyParams } from '@/contracts/getgemsCollection/NftCollection.data'
-import { decodeOffChainContent } from '@/contracts/nft-content/nftContent'
-import { useTonClient } from '@/store/tonClient'
+import {
+  buildNftCollectionStateInit,
+  RoyaltyParams,
+} from '@/contracts/getgemsCollection/NftCollection.data'
+import { NftItemCodeCell, NftItemEditableCodeCell } from '@/contracts/nftItem/NftItem.source'
 import BN from 'bn.js'
-import { useEffect, useMemo, useState } from 'react'
-import { Address, Cell } from 'ton'
+import { useMemo, useState } from 'react'
+import { Address, Cell } from 'ton-core'
 import { ResultContainer } from './ResultContainer'
 
 interface CollectionInfo {
   content: string
   base: string
   royalty: RoyaltyParams
+  owner: Address
+  nftEditable: boolean
 }
 export function DeployCollection() {
-  const [collectionAddress, setCollectionAddress] = useState('')
   const [collectionInfo, setCollectionInfo] = useState<CollectionInfo>({
     content: '',
     base: '',
     royalty: {
       royaltyFactor: 0,
-      royaltyBase: 0,
-      royaltyAddress: Address.parse('0:0'),
+      royaltyBase: 1000,
+      royaltyAddress: new Address(0, Buffer.from([])),
     },
+    owner: new Address(0, Buffer.from([])),
+    nftEditable: false,
   })
 
-  const tonClient = useTonClient()
-
-  const updateInfo = async () => {
-    setCollectionInfo({
-      content: '',
-      base: '',
-      royalty: {
-        royaltyFactor: 0,
-        royaltyBase: 0,
-        royaltyAddress: Address.parse('0:0'),
-      },
-    })
-
-    const address = Address.parse(collectionAddress)
-    const info = await tonClient.value.callGetMethod(address, 'royalty_params')
-
-    const [royaltyFactor, royaltyBase, royaltyAddress] = info.stack as [string[], string[], any[]]
-    console.log('info', info, royaltyAddress[1])
-    const addressCell = Cell.fromBoc(Buffer.from(royaltyAddress[1].bytes, 'base64'))[0]
-    const royaltyOwner = addressCell.beginParse().readAddress()
-    if (!royaltyOwner) {
-      return
-    }
-
-    const royalty = {
-      royaltyFactor: new BN(royaltyFactor[1].slice(2), 'hex').toNumber(),
-      royaltyBase: new BN(royaltyBase[1].slice(2), 'hex').toNumber(),
-      royaltyAddress: royaltyOwner,
-    }
-
-    const contentInfo = await tonClient.value.callGetMethod(address, 'get_collection_data')
-    const [, collectionContent] = contentInfo.stack as [
-      string[], // bn
-      any[], // cell
-      any[] // slice
-    ]
-    const contentCell = Cell.fromBoc(Buffer.from(collectionContent[1].bytes, 'base64'))[0]
-    const content = decodeOffChainContent(contentCell)
-
-    const baseInfo = await tonClient.value.callGetMethod(address, 'get_nft_content', [
-      ['num', '0'],
-      ['tvm.Cell', new Cell().toBoc({ idx: false }).toString('base64')],
-    ])
-    const baseCell = Cell.fromBoc(Buffer.from(baseInfo.stack[0][1].bytes, 'base64'))[0]
-    const baseContent = decodeOffChainContent(baseCell)
-    console.log('baseInfo', baseInfo, baseContent)
-
-    setCollectionInfo({
-      content,
-      base: baseContent,
-      royalty,
-    })
-  }
-
-  useEffect(() => {
-    updateInfo()
-  }, [collectionAddress])
-
-  const editContent = useMemo(() => {
-    return Queries.editContent({
+  const collectionInit = useMemo(() => {
+    console.log('buidl collectionInit')
+    const init = buildNftCollectionStateInit({
       collectionContent: collectionInfo.content,
       commonContent: collectionInfo.base,
+      nextItemIndex: 0n,
+      nftItemCode: collectionInfo.nftEditable ? NftItemEditableCodeCell : NftItemCodeCell,
+      ownerAddress: collectionInfo.owner,
       royaltyParams: {
         royaltyAddress: collectionInfo.royalty.royaltyAddress,
         royaltyBase: collectionInfo.royalty.royaltyBase,
         royaltyFactor: collectionInfo.royalty.royaltyFactor,
       },
     })
+    console.log('addres', init.address.toRawString())
+
+    return init
   }, [collectionInfo])
+
+  const collectionAddress = useMemo(() => {
+    return collectionInit ? collectionInit.address : new Address(0, Buffer.from([]))
+  }, [collectionInit])
 
   return (
     <div className="container mx-auto">
@@ -102,15 +60,32 @@ export function DeployCollection() {
             className="w-full px-2 py-2 bg-gray-200 rounded"
             type="text"
             id="collectionAddress"
-            value={collectionAddress}
-            onChange={(e) => setCollectionAddress(e.target.value)}
+            value={collectionAddress.toString({ bounceable: true, urlSafe: true })}
+            readOnly
           />
         </div>
       </div>
-      {collectionInfo.base && (
+      {
         <>
           <div className="py-2">
-            <div>Collection Info:</div>
+            <div className="flex">
+              <div>
+                <label htmlFor="collectionEditable">Collection Nfts Editable:</label>
+                <input
+                  className="ml-2 bg-gray-200 rounded"
+                  type="checkbox"
+                  id="collectionEditable"
+                  checked={collectionInfo?.nftEditable}
+                  onChange={(e) =>
+                    setCollectionInfo({
+                      ...collectionInfo,
+                      nftEditable: e.target.checked,
+                    })
+                  }
+                />
+              </div>
+            </div>
+
             <div>
               <label htmlFor="collectionContent">Collection Content:</label>
               <input
@@ -126,6 +101,7 @@ export function DeployCollection() {
                 }
               />
             </div>
+
             <div>
               <label htmlFor="collectionBase">Collection Base:</label>
               <input
@@ -161,7 +137,7 @@ export function DeployCollection() {
                 }
               />
             </div>
-            <div>
+            {/* <div>
               <label htmlFor="royaltyBase">Collection Royalty Base:</label>
               <input
                 className="w-full px-2 py-2 bg-gray-200 rounded"
@@ -178,7 +154,7 @@ export function DeployCollection() {
                   })
                 }
               />
-            </div>
+            </div> */}
             <div>
               <label htmlFor="royaltyResult">Collection Resulting Royalty(Factor/Base):</label>
               <input
@@ -201,7 +177,7 @@ export function DeployCollection() {
                 className="w-full px-2 py-2 bg-gray-200 rounded"
                 type="text"
                 id="royaltyAddress"
-                value={collectionInfo.royalty.royaltyAddress.toFriendly({
+                value={collectionInfo.royalty.royaltyAddress.toString({
                   bounceable: true,
                   urlSafe: true,
                 })}
@@ -216,16 +192,34 @@ export function DeployCollection() {
                 }
               />
             </div>
+            <div>
+              <label htmlFor="royaltyAddress">Collection Owner:</label>
+              <input
+                className="w-full px-2 py-2 bg-gray-200 rounded"
+                type="text"
+                id="royaltyAddress"
+                value={collectionInfo.owner.toString({
+                  bounceable: true,
+                  urlSafe: true,
+                })}
+                onChange={(e) =>
+                  setCollectionInfo({
+                    ...collectionInfo,
+                    owner: Address.parse(e.target.value),
+                  })
+                }
+              />
+            </div>
           </div>
         </>
-      )}
-      <div className="my-2">
-        <button onClick={updateInfo} className="px-4 py-2 rounded  text-white bg-blue-600">
-          Refresh
-        </button>
-      </div>
+      }
 
-      <ResultContainer address={collectionAddress} cell={editContent} amount={new BN('10000000')} />
+      <ResultContainer
+        address={collectionAddress.toRawString()}
+        cell={new Cell()}
+        amount={new BN('10000000')}
+        init={collectionInit.stateInit}
+      />
     </div>
   )
 }

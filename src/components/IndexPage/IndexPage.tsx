@@ -6,6 +6,7 @@ import 'react-tabs/style/react-tabs.css'
 import { EditNftCollectionOwner } from '../EditNftCollectionOwner'
 import { DeployCollection } from '../DeployCollection'
 import { TonConnectButton } from '@tonconnect/ui-react'
+import { DeployNfts } from '../DeployNfts'
 
 export function IndexPage() {
   return (
@@ -22,6 +23,7 @@ export function IndexPage() {
       <Tabs>
         <TabList>
           <Tab>Deploy Collection</Tab>
+          <Tab>Deploy Nfts</Tab>
           <Tab>Edit Collection</Tab>
           <Tab>Edit Collection Owner</Tab>
           <Tab>Edit Single Nft</Tab>
@@ -29,6 +31,9 @@ export function IndexPage() {
 
         <TabPanel>
           <DeployCollection />
+        </TabPanel>
+        <TabPanel>
+          <DeployNfts />
         </TabPanel>
         <TabPanel>
           <EditNftCollection />

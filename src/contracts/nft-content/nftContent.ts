@@ -9,13 +9,16 @@ export function flattenSnakeCell(cell: Cell) {
 
   while (c) {
     const cs = c.beginParse()
+    if (cs.remainingBits === 0) {
+      return res
+    }
     if (cs.remainingBits % 8 !== 0) {
       throw Error('Number remaining of bits is not multiply of 8')
     }
 
     const data = cs.loadBuffer(cs.remainingBits / 8)
     res = Buffer.concat([res, data])
-    c = c.refs[0]
+    c = c.refs && c.refs[0]
   }
 
   return res
@@ -69,6 +72,7 @@ export function decodeOffChainContent(content: Cell) {
   const data = flattenSnakeCell(content)
 
   const prefix = data[0]
+  console.log('offchain content', prefix, data)
   if (prefix !== OFF_CHAIN_CONTENT_PREFIX) {
     throw new Error(`Unknown content prefix: ${prefix.toString(16)}`)
   }

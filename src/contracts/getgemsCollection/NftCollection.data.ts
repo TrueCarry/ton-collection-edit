@@ -10,6 +10,7 @@ import {
 } from 'ton-core'
 import { NftCollectionCodeCell } from './NftCollection.source'
 import { encodeOffChainContent } from '../nft-content/nftContent'
+import { NftItemCodeCell, NftItemEditableCodeCell } from '../nftItem/NftItem.source'
 
 export type RoyaltyParams = {
   royaltyFactor: number
@@ -96,6 +97,30 @@ export const MintEditableDictValue: DictionaryValue<CollectionEditableMintItemIn
 //           nft_item_code:^Cell
 //           royalty_params:^RoyaltyParams
 //           = Storage;
+
+// return
+// (ds~load_msg_addr(), ;; owner_address
+//  ds~load_uint(64), ;; next_item_index
+//  ds~load_ref(), ;; content
+//  ds~load_ref(), ;; nft_item_code
+//  ds~load_ref()  ;; royalty_params
+//  );
+
+export function isNftCollectionNftEditable(data: Cell) {
+  const s = data.asSlice()
+  s.loadRef()
+
+  const itemCode = s.loadRef()
+  if (itemCode.equals(NftItemCodeCell)) {
+    return false
+  }
+
+  if (itemCode.equals(NftItemEditableCodeCell)) {
+    return false
+  }
+
+  throw new Error('Unknown nft item code')
+}
 
 export function buildNftCollectionDataCell(data: NftCollectionData): Cell {
   const dataCell = beginCell()

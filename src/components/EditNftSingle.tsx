@@ -74,15 +74,14 @@ export function EditNftSingle() {
       info.stack.pop(),
     ] as [TupleItemInt, TupleItemInt, TupleItemSlice]
     console.log('info', info, royaltyAddress[1])
-    // const addressCell = Cell.fromBoc(Buffer.from(royaltyAddress[1].bytes, 'base64'))[0]
     const royaltyOwner = royaltyAddress.cell.asSlice().loadAddress()
     if (!royaltyOwner) {
       return
     }
 
     const royalty = {
-      royaltyFactor: new BN(royaltyFactor[1].slice(2), 'hex').toNumber(),
-      royaltyBase: new BN(royaltyBase[1].slice(2), 'hex').toNumber(),
+      royaltyFactor: Number(royaltyFactor.value),
+      royaltyBase: Number(royaltyBase.value),
       royaltyAddress: royaltyOwner,
     }
 
@@ -100,7 +99,6 @@ export function EditNftSingle() {
       TupleItemCell, // cell
       TupleItemSlice // slice
     ]
-    // const contentCell = Cell.fromBoc(Buffer.from(nftContent[1].bytes, 'base64'))[0]
     const content = decodeOffChainContent(nftContent.cell)
 
     setNftInfo({

@@ -43,7 +43,6 @@ export function EditNftCollectionOwner() {
       TupleItemSlice // slice
     ]
 
-    // const addressCell = Cell.fromBoc(Buffer.from(ownerAddress[1].bytes, 'base64'))[0]
     const owner = ownerAddress.cell.beginParse().loadAddress()
     if (!owner) {
       throw new Error('unknown owner')

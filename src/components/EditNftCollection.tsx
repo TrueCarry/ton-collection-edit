@@ -51,15 +51,14 @@ export function EditNftCollection() {
       info.stack.pop(),
     ] as [TupleItemInt, TupleItemInt, TupleItemSlice]
     console.log('info', info, royaltyAddress[1])
-    const addressCell = Cell.fromBoc(Buffer.from(royaltyAddress[1].bytes, 'base64'))[0]
-    const royaltyOwner = addressCell.beginParse().loadAddress()
+    const royaltyOwner = royaltyAddress.cell.beginParse().loadAddress()
     if (!royaltyOwner) {
       return
     }
 
     const royalty = {
-      royaltyFactor: new BN(royaltyFactor[1].slice(2), 'hex').toNumber(),
-      royaltyBase: new BN(royaltyBase[1].slice(2), 'hex').toNumber(),
+      royaltyFactor: Number(royaltyFactor.value),
+      royaltyBase: Number(royaltyBase.value),
       royaltyAddress: royaltyOwner,
     }
 
@@ -73,7 +72,6 @@ export function EditNftCollection() {
       TupleItemCell, // cell
       TupleItemSlice // slice
     ]
-    // const contentCell = Cell.fromBoc(Buffer.from(collectionContent[1].bytes, 'base64'))[0]
     const content = decodeOffChainContent(collectionContent.cell)
 
     const baseInfo = await tonClient.value.callGetMethod(address, 'get_nft_content', [
@@ -85,7 +83,6 @@ export function EditNftCollection() {
       // ['num', '0'],
       // ['tvm.Cell', new Cell().toBoc({ idx: false }).toString('base64')],
     ])
-    // const baseCell = Cell.fromBoc(Buffer.from(baseInfo.stack[0][1].bytes, 'base64'))[0]
     const baseContent = decodeOffChainContent((baseInfo.stack.pop() as TupleItemCell).cell)
     console.log('baseInfo', baseInfo, baseContent)
 

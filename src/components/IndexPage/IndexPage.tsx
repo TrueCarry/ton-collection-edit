@@ -4,21 +4,32 @@ import { EditNftSingle } from '../EditNftSingle'
 import { Tab, TabList, TabPanel, Tabs } from 'react-tabs'
 import 'react-tabs/style/react-tabs.css'
 import { EditNftCollectionOwner } from '../EditNftCollectionOwner'
+import { DeployCollection } from '../DeployCollection'
+import { TonConnectButton } from '@tonconnect/ui-react'
 
 export function IndexPage() {
   return (
     <div className="container mx-auto pt-4 pb-12">
-      <h2 className="text-lg font-bold mb-4">Nft Data Changer</h2>
+      <div className="flex justify-between items-center">
+        <h2 className="text-lg font-bold mb-4">Nft collection tools</h2>
+        <div>
+          <TonConnectButton />
+        </div>
+      </div>
 
       <ApiSettings />
 
       <Tabs>
         <TabList>
+          <Tab>Deploy Collection</Tab>
           <Tab>Edit Collection</Tab>
           <Tab>Edit Collection Owner</Tab>
           <Tab>Edit Single Nft</Tab>
         </TabList>
 
+        <TabPanel>
+          <DeployCollection />
+        </TabPanel>
         <TabPanel>
           <EditNftCollection />
         </TabPanel>

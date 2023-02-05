@@ -1,7 +1,8 @@
 import BN from 'bn.js'
 import QRCodeStyling from 'qr-code-styling'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Cell } from 'ton'
+import { useTonWallet, useTonConnectUI } from '@tonconnect/ui-react'
 
 export function ResultContainer({
   address,
@@ -12,6 +13,9 @@ export function ResultContainer({
   cell: Cell
   amount: BN
 }) {
+  const wallet = useTonWallet()
+  const [tonConnectUI] = useTonConnectUI()
+
   const [tonkeeperCode] = useState(
     new QRCodeStyling({
       width: 300,
@@ -111,12 +115,36 @@ export function ResultContainer({
     })
   }, [tonkeeperLink, tonhubLink])
 
+  const sendTonConnectTx = useCallback(() => {
+    tonConnectUI.sendTransaction({
+      messages: [
+        {
+          address,
+          amount: amount.toString(),
+          payload: binData,
+        },
+      ],
+      validUntil: Math.floor(Date.now() / 1000) + 300,
+    })
+  }, [])
+
   return (
     <div>
-      <div className="flex gap-4">
+      <div className="flex items-center gap-2">
+        <div>TonConnect:</div>
+        {wallet ? (
+          <button className="px-4 py-2 rounded text-white bg-blue-600" onClick={sendTonConnectTx}>
+            Send Transaction
+          </button>
+        ) : (
+          <div>Connect TonConnect wallet to send tx</div>
+        )}
+      </div>
+
+      <div className="flex gap-4 mt-8">
         <div>
           Tonkeeper:
-          <div id="canvas" className="overflow-hidden w-[300px] h-[300px] flex"></div>
+          <div id="canvas" className="overflow-hidden w-[100px] h-[100px] flex"></div>
           <a href={tonhubLink} target="_blank" rel="noopener noreferrer">
             Open In Tonkeeper
           </a>
@@ -124,7 +152,7 @@ export function ResultContainer({
 
         <div>
           Tonhub:
-          <div id="canvas2" className="overflow-hidden w-[300px] h-[300px] flex"></div>
+          <div id="canvas2" className="overflow-hidden w-[100px] h-[100px] flex"></div>
           <a href={tonhubLink} target="_blank" rel="noopener noreferrer">
             Open In Tonhub
           </a>
@@ -132,7 +160,7 @@ export function ResultContainer({
 
         <div>
           Generic Wallet:
-          <div id="canvas3" className="overflow-hidden w-[300px] h-[300px] flex"></div>
+          <div id="canvas3" className="overflow-hidden w-[100px] h-[100px] flex"></div>
           <a href={tonLink} target="_blank" rel="noopener noreferrer">
             Open In TON
           </a>

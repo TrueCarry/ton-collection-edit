@@ -21,6 +21,10 @@ export function ApiSettings() {
     <div className="my-2">
       <div>
         <label htmlFor="apiEndpointInput">API Endpoint:</label>
+        <div className="text-sm text-gray-500 my-1">
+          Mainnet: https://mainnet.tonhubapi.com/jsonRPC Testnet:
+          https://testnet.tonhubapi.com/jsonRPC
+        </div>
         <input
           className="w-full px-2 py-2 bg-gray-200 rounded"
           type="text"

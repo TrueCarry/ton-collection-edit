@@ -224,7 +224,7 @@ export function EditNftSingle() {
       </div>
 
       <div className="my-2">
-        <button onClick={updateInfo} className="px-4 py-2 rounded  text-white bg-blue-600">
+        <button onClick={updateInfo} className="px-4 py-2 rounded text-white bg-blue-600">
           Refresh
         </button>
       </div>

@@ -10,6 +10,8 @@
   "dependencies": {
     "@hookstate/core": "^4.0.0-rc21",
     "@hookstate/devtools": "4.0.0-rc21",
+    "@tonconnect/sdk": "^2.0.7",
+    "@tonconnect/ui-react": "^0.0.14",
     "@types/bn.js": "^5.1.0",
     "autoprefixer": "^10.4.4",
     "bn.js": "^5.2.1",

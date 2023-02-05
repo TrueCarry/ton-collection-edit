@@ -13,6 +13,10 @@
   --color-highlight-text: #ffffff;
 }
 
+* {
+  font-family: Mulish, "Open Sans", sans-serif;
+}
+
 body {
   color: var(--color-main);
   font-family: Mulish, "Open Sans", sans-serif;

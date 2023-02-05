@@ -11,7 +11,7 @@ interface CollectionInfo {
   base: string
   royalty: RoyaltyParams
 }
-export function EditNftCollection() {
+export function DeployCollection() {
   const [collectionAddress, setCollectionAddress] = useState('')
   const [collectionInfo, setCollectionInfo] = useState<CollectionInfo>({
     content: '',
@@ -220,7 +220,7 @@ export function EditNftCollection() {
         </>
       )}
       <div className="my-2">
-        <button onClick={updateInfo} className="px-4 py-2 rounded text-white bg-blue-600">
+        <button onClick={updateInfo} className="px-4 py-2 rounded  text-white bg-blue-600">
           Refresh
         </button>
       </div>

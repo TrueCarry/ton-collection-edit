@@ -148,17 +148,28 @@ export function DeployNfts() {
     while (ids.length > 0) {
       const nftIds = ids.splice(0, 100)
 
-      const mintBody = Queries.batchMintEditable({
-        items: nftIds.map((i) => {
-          return {
-            passAmount: 10000000n,
-            content: replaceId(template || '', i),
-            index: i,
-            ownerAddress: Address.parse(tonConnectUI.account?.address || ''),
-            editorAddress: Address.parse(tonConnectUI.account?.address || ''),
-          }
-        }),
-      })
+      const mintBody = collectionInfo.nftEditable
+        ? Queries.batchMintEditable({
+            items: nftIds.map((i) => {
+              return {
+                passAmount: 10000000n,
+                content: replaceId(template || '', i),
+                index: i,
+                ownerAddress: Address.parse(tonConnectUI.account?.address || ''),
+                editorAddress: Address.parse(tonConnectUI.account?.address || ''),
+              }
+            }),
+          })
+        : Queries.batchMint({
+            items: nftIds.map((i) => {
+              return {
+                passAmount: 10000000n,
+                content: replaceId(template || '', i),
+                index: i,
+                ownerAddress: Address.parse(tonConnectUI.account?.address || ''),
+              }
+            }),
+          })
 
       const messageValue = (10000000n + 17500000n) * BigInt(nftIds.length)
       messages.push({

@@ -3,6 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@hookstate/core': ^4.0.0-rc21
   '@hookstate/devtools': 4.0.0-rc21
+  '@orbs-network/ton-access': ^2.2.2
   '@ton-community/sandbox': ^0.2.2
   '@ton-community/test-utils': ^0.0.2
   '@tonconnect/sdk': ^2.0.7
@@ -38,6 +39,7 @@ specifiers:
   react-jazzicon: ^1.0.4
   react-qr-code: ^2.0.7
   react-tabs: ^6.0.0
+  react-use-localstorage: ^3.5.3
   reactjs-popup: ^2.0.5
   tailwindcss: ^3.1.8
   ton: ^13.3.0
@@ -52,6 +54,7 @@ specifiers:
 dependencies:
   '@hookstate/core': 4.0.0-rc21_react@18.2.0
   '@hookstate/devtools': 4.0.0-rc21_@hookstate+core@4.0.0-rc21
+  '@orbs-network/ton-access': 2.2.2
   '@tonconnect/sdk': 2.0.7
   '@tonconnect/ui-react': 0.0.14_biqbaboplfbrettd7655fr4n2y
   '@types/bn.js': 5.1.1
@@ -68,6 +71,7 @@ dependencies:
   react-jazzicon: 1.0.4_biqbaboplfbrettd7655fr4n2y
   react-qr-code: 2.0.11_react@18.2.0
   react-tabs: 6.0.0_react@18.2.0
+  react-use-localstorage: 3.5.3_react@18.2.0
   reactjs-popup: 2.0.5_biqbaboplfbrettd7655fr4n2y
   tailwindcss: 3.2.4_ra2vnoek4vhbzktaezawwqbin4
   ton: 13.3.0_2gf4wcsxbh5zm3xlv6aiyusdku
@@ -893,6 +897,14 @@ packages:
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.14.0
+
+  /@orbs-network/ton-access/2.2.2:
+    resolution: {integrity: sha512-ygcbNxqZez2CpDMFhMTgbNAm7MGoDCbF1Zbp/liUAWqrKjytUDAoAAVXIWulhl0exWaacn7YWI75GNt8ouxjwA==}
+    dependencies:
+      isomorphic-fetch: 3.0.0
+    transitivePeerDependencies:
+      - encoding
+    dev: false
 
   /@scarf/scarf/1.1.1:
     resolution: {integrity: sha512-VGbKDbk1RFIaSmdVb0cNjjWJoRWRI/Weo23AjRCC2nryO0iAS8pzsToJfPVPtVs74WHw4L1UTADNdIYRLkirZQ==}
@@ -2991,6 +3003,15 @@ packages:
   /isexe/2.0.0:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
 
+  /isomorphic-fetch/3.0.0:
+    resolution: {integrity: sha512-qvUtwJ3j6qwsF3jLxkZ72qCgjMysPzDfeV240JHiGZsANBYd+EEuu35v7dfrJ9Up0Ak07D7GGSkGhCHTqg/5wA==}
+    dependencies:
+      node-fetch: 2.6.9
+      whatwg-fetch: 3.6.2
+    transitivePeerDependencies:
+      - encoding
+    dev: false
+
   /istanbul-lib-coverage/3.2.0:
     resolution: {integrity: sha512-eOeJ5BHCmHYvQK7xt9GkdHuzuCGS1Y6g9Gvnx3Ym33fz/HpLRYxiS0wHNr+m/MBC8B647Xt608vCDEvhl9c6Mw==}
     engines: {node: '>=8'}
@@ -4085,6 +4106,14 @@ packages:
       react: 18.2.0
     dev: false
 
+  /react-use-localstorage/3.5.3_react@18.2.0:
+    resolution: {integrity: sha512-1oNvJmo72G4v5P9ytJZZTb6ywD3UzWBiainTtfbNlb+U08hc+SOD5HqgiLTKUF0MxGcIR9JSnZGmBttNLXaQYA==}
+    peerDependencies:
+      react: '>=16.8.1'
+    dependencies:
+      react: 18.2.0
+    dev: false
+
   /react/18.2.0:
     resolution: {integrity: sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==}
     engines: {node: '>=0.10.0'}
@@ -4760,6 +4789,10 @@ packages:
 
   /webidl-conversions/3.0.1:
     resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
+    dev: false
+
+  /whatwg-fetch/3.6.2:
+    resolution: {integrity: sha512-bJlen0FcuU/0EMLrdbJ7zOnW6ITZLrZMIarMUVmdKtsGvZna8vxKYaexICWPfZ8qwf9fzNq+UEIZrnSaApt6RA==}
     dev: false
 
   /whatwg-url/5.0.0:

@@ -1,25 +1,55 @@
 import { useTonClient } from '@/store/tonClient'
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { TonClient } from 'ton'
+import useLocalStorage from 'react-use-localstorage'
+import { getHttpEndpoint } from '@orbs-network/ton-access'
 
 export function ApiSettings() {
-  const [apiKey, setApiKey] = useState('')
-  const [endpoint, setEndpoint] = useState('https://mainnet.tonhubapi.com/jsonRPC')
+  // const [apiKey, setApiKey] = useLocalStorage('deployerApiKey', '')
+  // const [endpoint, setEndpoint] = useLocalStorage(
+  //   'deployerApiUrl',
+  //   'https://mainnet.tonhubapi.com/jsonRPC'
+  // )
+
+  const [isTestnet, setTestnet] = useLocalStorage('deployerIsTestnet', 'false')
 
   const tonClient = useTonClient()
 
   useEffect(() => {
-    tonClient.set(
-      new TonClient({
-        endpoint,
-        apiKey,
-      })
-    )
-  }, [apiKey, endpoint])
+    console.log('change network')
+    getHttpEndpoint({
+      network: isTestnet === 'true' ? 'testnet' : 'mainnet',
+    }).then((endpoint) => {
+      tonClient.set(
+        new TonClient({
+          endpoint,
+        })
+      )
+    })
+  }, [isTestnet])
+
+  // useEffect(() => {
+  //   tonClient.set(
+  //     new TonClient({
+  //       endpoint,
+  //       apiKey,
+  //     })
+  //   )
+  // }, [apiKey, endpoint])
 
   return (
     <div className="my-2">
       <div>
+        <label htmlFor="apiTestnetInput">Is Testnet:</label>
+        <input
+          className="ml-2 bg-gray-200 rounded"
+          type="checkbox"
+          id="apiTestnetInput"
+          checked={isTestnet === 'true'}
+          onChange={(e) => setTestnet(String(e.target.checked))}
+        />
+      </div>
+      {/* <div>
         <label htmlFor="apiEndpointInput">API Endpoint:</label>
         <div className="text-sm text-gray-500 my-1">
           Mainnet: https://mainnet.tonhubapi.com/jsonRPC Testnet:
@@ -42,7 +72,7 @@ export function ApiSettings() {
           value={apiKey}
           onChange={(e) => setApiKey(e.target.value)}
         />
-      </div>
+      </div> */}
     </div>
   )
 }

@@ -10,6 +10,7 @@
   "dependencies": {
     "@hookstate/core": "^4.0.0-rc21",
     "@hookstate/devtools": "4.0.0-rc21",
+    "@orbs-network/ton-access": "^2.2.2",
     "@tonconnect/sdk": "^2.0.7",
     "@tonconnect/ui-react": "^0.0.14",
     "@types/bn.js": "^5.1.0",
@@ -26,6 +27,7 @@
     "react-jazzicon": "^1.0.4",
     "react-qr-code": "^2.0.7",
     "react-tabs": "^6.0.0",
+    "react-use-localstorage": "^3.5.3",
     "reactjs-popup": "^2.0.5",
     "tailwindcss": "^3.1.8",
     "ton": "^13.3.0",

@@ -36,7 +36,8 @@ export function DeployNfts() {
 
   const [collectionAddress, setCollectionAddress] = useState('')
   const [start, setStart] = useState<number>(0)
-  const [count, setCount] = useState<number>(0)
+  const [count, setCount] = useState<number>(1)
+  const [batchSize, setBatchSize] = useState<number>(50)
   const [template, setTemplate] = useState<string>('{id}.json')
 
   const replaceId = (template: string, id: number) => {
@@ -114,11 +115,12 @@ export function DeployNfts() {
       owner: collectionOwner.cell.asSlice().loadAddress(),
       nftEditable: isNftCollectionNftEditable(Cell.fromBoc(account.data || Buffer.from([]))[0]),
     })
+    setStart(Number(nextItemIndex.value))
   }
 
   useEffect(() => {
     updateInfo()
-  }, [collectionAddress])
+  }, [collectionAddress, tonClient])
 
   const [tonConnectUI] = useTonConnectUI()
 
@@ -126,7 +128,7 @@ export function DeployNfts() {
     // const start = 0
     // const count = 400
 
-    if (!count || count < 1 || count < start) {
+    if (!count || count < 1) {
       return []
     }
 
@@ -144,9 +146,10 @@ export function DeployNfts() {
       payload?: string
     }[] = []
 
-    const ids = [...Array(count - start)].map((_, i) => start + i)
+    const ids = [...Array(count)].map((_, i) => start + i)
     while (ids.length > 0) {
-      const nftIds = ids.splice(0, 100)
+      const nftIds = ids.splice(0, 50)
+      console.log('nftIds len', nftIds.length)
 
       const mintBody = collectionInfo.nftEditable
         ? Queries.batchMintEditable({
@@ -180,18 +183,31 @@ export function DeployNfts() {
     }
 
     return messages
-  }, [start, count, template, collectionInfo, tonConnectUI.account])
+  }, [start, count, template, collectionInfo, tonConnectUI.account, tonClient])
 
   const sendTx = useCallback(() => {
     tonConnectUI.sendTransaction({
       messages: mintContent,
       validUntil: Math.floor(Date.now()) + 300,
     })
+    console.log('send message', mintContent)
   }, [mintContent])
 
   return (
-    <div className="container mx-auto">
+    <div className="container mx-auto gap-2 flex flex-col">
       <div className="">
+        <div className="mb-4">
+          Allows you to mint nfts using batch mint funciton.
+          <br></br>Batch mint allows up to 250 nft minted in one message, but due to network gas
+          limits we should be able to mint around 100 nfts.
+          <br></br>Standard wallet can send up to 4 messages per transaction, so we can effectively
+          mint 4*100 nfts with each transactions
+          <br></br>With this setup you can mint small collections(&lt;5000 nfts) very fast without
+          relying on any automation scripts, so we don't need to ask you for your seed
+          <br></br>Minter can detect if you're using standard nft or standard editable nft and will
+          use correct minting message. If you're using custom nft code results are not guaranteed.
+          <br></br>Minter address is used as nft owner and nft editor.
+        </div>
         <div>
           <label htmlFor="collectionAddress">Collection Address:</label>
           <input
@@ -242,6 +258,7 @@ export function DeployNfts() {
       </div>
 
       <h3 className="font-bold text-lg">Mint settings:</h3>
+
       <div className="flex">
         <div>
           <label htmlFor="mintStart">Start from:</label>
@@ -254,9 +271,27 @@ export function DeployNfts() {
           />
         </div>
       </div>
+
       <div className="flex">
         <div>
-          <label htmlFor="mintCount">Nfts to mint (max: 400):</label>
+          <label htmlFor="batchSize">Batch size:</label>
+          <div className="text-sm text-gray-500">
+            Nfts per message. 100 should work for network, but tonkeeper allows only 50
+          </div>
+          <input
+            className="w-full px-2 py-2 bg-gray-200 rounded"
+            type="number"
+            id="batchSize"
+            value={batchSize}
+            onChange={(e) => setBatchSize(parseInt(e.target.value, 10) || 0)}
+          />
+        </div>
+      </div>
+
+      <div className="flex">
+        <div>
+          <label htmlFor="mintCount">Nfts to mint:</label>
+          <div className="text-sm text-gray-500">Max: 4 * batchSize ({4 * batchSize})</div>
           <input
             className="w-full px-2 py-2 bg-gray-200 rounded"
             type="number"
@@ -266,6 +301,7 @@ export function DeployNfts() {
           />
         </div>
       </div>
+
       <div className="flex">
         <div>
           <label htmlFor="mintTemplate">
@@ -278,11 +314,15 @@ export function DeployNfts() {
             value={template || ''}
             onChange={(e) => setTemplate(e.target.value)}
           />
-          <div>Result exaple: {replaceId(template, 1)}</div>
+          <div>Last nft example: {replaceId(template, start + count)}</div>
+          <div>
+            Full url: {collectionInfo.base}
+            {replaceId(template, start + count)}
+          </div>
         </div>
       </div>
 
-      <button onClick={sendTx} className="mt-4 px-4 py-2 rounded text-white bg-blue-600">
+      <button onClick={sendTx} className="mt-4 px-4 py-2 rounded text-white bg-blue-600 w-32">
         Send Mint Tx
       </button>
     </div>

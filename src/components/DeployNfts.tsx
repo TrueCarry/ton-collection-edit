@@ -132,6 +132,10 @@ export function DeployNfts() {
       return []
     }
 
+    if (!tonConnectUI.account?.address) {
+      return []
+    }
+
     // if (!collectionInfo.base) {
     //   return
     // }

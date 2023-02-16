@@ -17,71 +17,6 @@ export function ResultContainer({
   const wallet = useTonWallet()
   const [tonConnectUI] = useTonConnectUI()
 
-  // const [tonkeeperCode] = useState(
-  //   new QRCodeStyling({
-  //     width: 300,
-  //     height: 300,
-  //     margin: 0,
-  //     type: 'canvas',
-  //     data: 'https://app.tonkeeper.com/transfer/',
-  //     dotsOptions: {
-  //       color: '#000',
-  //       type: 'extra-rounded',
-  //     },
-  //     backgroundOptions: {
-  //       // color: '#e9ebee',
-  //     },
-  //     cornersSquareOptions: {
-  //       type: 'extra-rounded',
-  //     },
-  //   })
-  // )
-  // const [tonhubCode] = useState(
-  //   new QRCodeStyling({
-  //     width: 300,
-  //     height: 300,
-  //     margin: 0,
-  //     type: 'canvas',
-  //     data: 'https://tonhub.com/transfer/',
-  //     dotsOptions: {
-  //       color: '#000',
-  //       type: 'extra-rounded',
-  //     },
-  //     backgroundOptions: {
-  //       // color: '#e9ebee',
-  //     },
-  //     cornersSquareOptions: {
-  //       type: 'extra-rounded',
-  //     },
-  //   })
-  // )
-
-  // const [tonCode] = useState(
-  //   new QRCodeStyling({
-  //     width: 300,
-  //     height: 300,
-  //     margin: 0,
-  //     type: 'canvas',
-  //     data: 'https://tonhub.com/transfer/',
-  //     dotsOptions: {
-  //       color: '#000',
-  //       type: 'extra-rounded',
-  //     },
-  //     backgroundOptions: {
-  //       // color: '#e9ebee',
-  //     },
-  //     cornersSquareOptions: {
-  //       type: 'extra-rounded',
-  //     },
-  //   })
-  // )
-
-  // useEffect(() => {
-  //   tonkeeperCode.append(document.getElementById('canvas') as HTMLElement)
-  //   tonhubCode.append(document.getElementById('canvas2') as HTMLElement)
-  //   tonCode.append(document.getElementById('canvas3') as HTMLElement)
-  // })
-
   const binData = useMemo(
     () => cell && cell.toBoc().toString('base64').replace(/\//g, '_').replace(/\+/g, '-'),
     [cell]
@@ -90,43 +25,6 @@ export function ResultContainer({
     () => init && init.toBoc().toString('base64').replace(/\//g, '_').replace(/\+/g, '-'),
     [init]
   )
-
-  // const tonkeeperLink = useMemo(
-  //   () =>
-  //     `https://app.tonkeeper.com/transfer/${address}?amount=${amount.toString()}&bin=${binData}${
-  //       init ? `&init=${initData}` : ''
-  //     }`,
-  //   [address, amount, binData, initData]
-  // )
-
-  // const tonhubLink = useMemo(
-  //   () =>
-  //     `https://tonhub.com/transfer/${address}?amount=${amount.toString()}&bin=${binData}${
-  //       init ? `&init=${initData}` : ''
-  //     }`,
-  //   [address, amount, binData, initData]
-  // )
-
-  // const tonLink = useMemo(
-  //   () =>
-  //     `ton://transfer/${address}?amount=${amount.toString()}&bin=${binData}${
-  //       init ? `&init=${initData}` : ''
-  //     }`,
-  //   [address, amount, binData, initData]
-  // )
-
-  // useEffect(() => {
-  //   console.log('tonhublink,', tonhubLink)
-  //   tonkeeperCode.update({
-  //     data: tonkeeperLink,
-  //   })
-  //   tonhubCode.update({
-  //     data: tonhubLink,
-  //   })
-  //   tonCode.update({
-  //     data: tonLink,
-  //   })
-  // }, [tonkeeperLink, tonhubLink])
 
   const sendTonConnectTx = useCallback(() => {
     tonConnectUI.sendTransaction({
@@ -155,31 +53,6 @@ export function ResultContainer({
         )}
       </div>
 
-      {/* <div className="flex gap-4 mt-8">
-        <div>
-          Tonkeeper:
-          <div id="canvas" className="overflow-hidden w-[100px] h-[100px] flex"></div>
-          <a href={tonhubLink} target="_blank" rel="noopener noreferrer">
-            Open In Tonkeeper
-          </a>
-        </div>
-
-        <div>
-          Tonhub:
-          <div id="canvas2" className="overflow-hidden w-[100px] h-[100px] flex"></div>
-          <a href={tonhubLink} target="_blank" rel="noopener noreferrer">
-            Open In Tonhub
-          </a>
-        </div>
-
-        <div>
-          Generic Wallet:
-          <div id="canvas3" className="overflow-hidden w-[100px] h-[100px] flex"></div>
-          <a href={tonLink} target="_blank" rel="noopener noreferrer">
-            Open In TON
-          </a>
-        </div>
-      </div> */}
       <div>
         <div>Body:</div>
         <code className="bg-gray-100">{binData}</code>

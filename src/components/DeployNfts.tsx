@@ -152,7 +152,7 @@ export function DeployNfts() {
 
     const ids = [...Array(count)].map((_, i) => start + i)
     while (ids.length > 0) {
-      const nftIds = ids.splice(0, 50)
+      const nftIds = ids.splice(0, batchSize)
       console.log('nftIds len', nftIds.length)
 
       const mintBody = collectionInfo.nftEditable

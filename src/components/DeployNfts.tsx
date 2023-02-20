@@ -192,7 +192,7 @@ export function DeployNfts() {
   const sendTx = useCallback(() => {
     tonConnectUI.sendTransaction({
       messages: mintContent,
-      validUntil: Math.floor(Date.now()) + 300,
+      validUntil: Math.floor(Date.now() / 1000) + 300,
     })
     console.log('send message', mintContent)
   }, [mintContent])

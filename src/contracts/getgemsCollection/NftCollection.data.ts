@@ -116,7 +116,7 @@ export function isNftCollectionNftEditable(data: Cell) {
   }
 
   if (itemCode.equals(NftItemEditableCodeCell)) {
-    return false
+    return true
   }
 
   throw new Error('Unknown nft item code')

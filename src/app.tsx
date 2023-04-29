@@ -6,7 +6,7 @@ export function App() {
   return (
     <TonConnectUIProvider
       manifestUrl="https://minter.ton.org/tonconnect-manifest.json"
-      walletsList={{
+      walletsListConfiguration={{
         includeWallets: [
           {
             name: 'TonDevWallet',

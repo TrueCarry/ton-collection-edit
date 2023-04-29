@@ -72,7 +72,6 @@ export function decodeOffChainContent(content: Cell) {
   const data = flattenSnakeCell(content)
 
   const prefix = data[0]
-  console.log('offchain content', prefix, data)
   if (prefix !== OFF_CHAIN_CONTENT_PREFIX) {
     throw new Error(`Unknown content prefix: ${prefix.toString(16)}`)
   }

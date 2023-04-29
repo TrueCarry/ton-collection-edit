@@ -7,6 +7,7 @@ import { EditNftCollectionOwner } from '../EditNftCollectionOwner'
 import { DeployCollection } from '../DeployCollection'
 import { TonConnectButton } from '@tonconnect/ui-react'
 import { DeployNfts } from '../DeployNfts'
+import { DeployTelemintNumbersNft } from '../DeployTelemintNumbersNft'
 
 export function IndexPage() {
   return (
@@ -27,6 +28,9 @@ export function IndexPage() {
           <Tab>Edit Collection</Tab>
           <Tab>Edit Collection Owner</Tab>
           <Tab>Edit Single Nft</Tab>
+
+          {/* <Tab>Deploy Telemint Numbers Collection</Tab> */}
+          <Tab>Deploy Telemint Numbers Nft</Tab>
         </TabList>
 
         <TabPanel>
@@ -43,6 +47,13 @@ export function IndexPage() {
         </TabPanel>
         <TabPanel>
           <EditNftSingle />
+        </TabPanel>
+
+        {/* <TabPanel>
+          <DeployTelemintNumbersCollection />
+        </TabPanel> */}
+        <TabPanel>
+          <DeployTelemintNumbersNft />
         </TabPanel>
       </Tabs>
     </div>

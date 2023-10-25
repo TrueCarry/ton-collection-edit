@@ -12,6 +12,7 @@ import { DeployVanityContract } from '../DeployVanityContract'
 import { DeployJetton } from '../DeployJetton'
 import { EditJetton } from '../EditJetton'
 import { EditJettonAdmin } from '../EditJettonAdmin'
+import { SendManyNfts } from '../SendManyNfts'
 
 export function IndexPage() {
   return (
@@ -41,6 +42,8 @@ export function IndexPage() {
           <Tab>Edit Jetton Admin</Tab>
 
           <Tab>Deploy Vanity Contract</Tab>
+
+          <Tab>Send Many Nfts</Tab>
         </TabList>
 
         <TabPanel>
@@ -78,6 +81,10 @@ export function IndexPage() {
 
         <TabPanel>
           <DeployVanityContract />
+        </TabPanel>
+
+        <TabPanel>
+          <SendManyNfts />
         </TabPanel>
       </Tabs>
     </div>

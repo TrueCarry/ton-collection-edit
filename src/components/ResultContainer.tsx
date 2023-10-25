@@ -12,7 +12,7 @@ export function ResultContainer({
   address: string
   cell?: Cell
   init?: Cell
-  amount: BN
+  amount: BN | bigint
 }) {
   const wallet = useTonWallet()
   const [tonConnectUI] = useTonConnectUI()

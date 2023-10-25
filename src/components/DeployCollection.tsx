@@ -29,7 +29,6 @@ export function DeployCollection() {
   })
 
   const collectionInit = useMemo(() => {
-    console.log('buidl collectionInit')
     const init = buildNftCollectionStateInit({
       collectionContent: collectionInfo.content,
       commonContent: collectionInfo.base,

@@ -15,6 +15,9 @@ export function DeployVanityContract() {
   const owner = useTonAddress()
 
   const contractData = useMemo(() => {
+    if (!owner) {
+      return beginCell().endCell()
+    }
     const data = beginCell()
     data.storeInt(0, 5) // padding
 
@@ -26,7 +29,7 @@ export function DeployVanityContract() {
 
   const stateInit = useMemo(() => {
     if (!contractData) {
-      return beginCell().endCell()
+      return undefined
     }
     const init = {
       code: VanityAddressCode,

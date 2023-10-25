@@ -10,13 +10,12 @@ export function ResultContainer({
   init,
 }: {
   address: string
-  cell: Cell
+  cell?: Cell
   init?: Cell
   amount: BN
 }) {
   const wallet = useTonWallet()
   const [tonConnectUI] = useTonConnectUI()
-
   const binData = useMemo(
     () => cell && cell.toBoc().toString('base64').replace(/\//g, '_').replace(/\+/g, '-'),
     [cell]

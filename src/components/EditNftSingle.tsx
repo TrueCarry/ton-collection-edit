@@ -244,12 +244,7 @@ export function EditNftSingle() {
         </button>
       </div>
 
-      <ResultContainer
-        address={nftAddress}
-        cell={editContent}
-        amount={new BN('10000000')}
-        init={new Cell()}
-      />
+      <ResultContainer address={nftAddress} cell={editContent} amount={new BN('10000000')} />
     </div>
   )
 }

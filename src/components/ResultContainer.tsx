@@ -1,6 +1,6 @@
 import BN from 'bn.js'
 import { useCallback, useMemo } from 'react'
-import { Cell } from 'ton'
+import { Cell, loadStateInit } from 'ton'
 import { useTonWallet, useTonConnectUI } from '@tonconnect/ui-react'
 
 export function ResultContainer({
@@ -21,10 +21,27 @@ export function ResultContainer({
     () => cell && cell.toBoc().toString('base64').replace(/\//g, '_').replace(/\+/g, '-'),
     [cell]
   )
-  const initData = useMemo(
+  const initCell = useMemo(
     () => init && init.toBoc().toString('base64').replace(/\//g, '_').replace(/\+/g, '-'),
     [init]
   )
+
+  const { initCode, initData } = useMemo(() => {
+    if (!init) {
+      return { initCode: '', initData: '' }
+    }
+
+    const stateInit = loadStateInit(init.asSlice())
+    return {
+      initCode:
+        stateInit?.code &&
+        stateInit.code.toBoc().toString('base64').replace(/\//g, '_').replace(/\+/g, '-'),
+      initData:
+        stateInit?.data &&
+        stateInit.data.toBoc().toString('base64').replace(/\//g, '_').replace(/\+/g, '-'),
+    }
+    // return init && init.toBoc().toString('base64').replace(/\//g, '_').replace(/\+/g, '-')
+  }, [init])
 
   const sendTonConnectTx = useCallback(() => {
     tonConnectUI.sendTransaction({
@@ -33,12 +50,12 @@ export function ResultContainer({
           address,
           amount: amount.toString(),
           payload: binData,
-          stateInit: initData,
+          stateInit: initCell || undefined,
         },
       ],
       validUntil: Math.floor(Date.now() / 1000) + 300,
     })
-  }, [address, amount, binData, initData])
+  }, [address, amount, binData, initCell])
 
   return (
     <div>
@@ -55,11 +72,36 @@ export function ResultContainer({
 
       <div>
         <div>Body:</div>
-        <code className="bg-gray-100">{binData}</code>
+        <code className="bg-gray-100 h-16">{binData}</code>
       </div>
       <div>
-        <div>Init:</div>
-        <code className="bg-gray-100">{initData}</code>
+        <div>Init Cell:</div>
+        <code
+          className="bg-gray-100 h-16 overflow-scroll flex"
+          onClick={(e) => window && window.getSelection()?.selectAllChildren(e.target as any)}
+        >
+          {initCell}
+        </code>
+      </div>
+
+      <div>
+        <div>Init Code:</div>
+        <code
+          className="bg-gray-100 h-16 overflow-scroll flex"
+          onClick={(e) => window && window.getSelection()?.selectAllChildren(e.target as any)}
+        >
+          {initCode}
+        </code>
+      </div>
+
+      <div>
+        <div>Init Data:</div>
+        <code
+          className="bg-gray-100 h-16 overflow-scroll flex"
+          onClick={(e) => window && window.getSelection()?.selectAllChildren(e.target as any)}
+        >
+          {initData}
+        </code>
       </div>
     </div>
   )

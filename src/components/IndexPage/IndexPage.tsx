@@ -8,6 +8,10 @@ import { DeployCollection } from '../DeployCollection'
 import { TonConnectButton } from '@tonconnect/ui-react'
 import { DeployNfts } from '../DeployNfts'
 import { DeployTelemintNumbersNft } from '../DeployTelemintNumbersNft'
+import { DeployVanityContract } from '../DeployVanityContract'
+import { DeployJetton } from '../DeployJetton'
+import { EditJetton } from '../EditJetton'
+import { EditJettonAdmin } from '../EditJettonAdmin'
 
 export function IndexPage() {
   return (
@@ -31,6 +35,12 @@ export function IndexPage() {
 
           {/* <Tab>Deploy Telemint Numbers Collection</Tab> */}
           <Tab>Deploy Telemint Numbers Nft</Tab>
+
+          <Tab>Deploy Jetton</Tab>
+          <Tab>Edit Jetton</Tab>
+          <Tab>Edit Jetton Admin</Tab>
+
+          <Tab>Deploy Vanity Contract</Tab>
         </TabList>
 
         <TabPanel>
@@ -54,6 +64,20 @@ export function IndexPage() {
         </TabPanel> */}
         <TabPanel>
           <DeployTelemintNumbersNft />
+        </TabPanel>
+
+        <TabPanel>
+          <DeployJetton />
+        </TabPanel>
+        <TabPanel>
+          <EditJetton />
+        </TabPanel>
+        <TabPanel>
+          <EditJettonAdmin />
+        </TabPanel>
+
+        <TabPanel>
+          <DeployVanityContract />
         </TabPanel>
       </Tabs>
     </div>

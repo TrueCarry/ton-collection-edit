@@ -1,4 +1,17 @@
-import { beginCell, Cell } from 'ton-core'
+import { beginCell, Cell, Dictionary } from 'ton-core'
+// eslint-disable-next-line camelcase
+import { sha256_sync } from 'ton-crypto'
+import { NFTDictValueSerializer } from './nftDict'
+
+export interface JettonContent {
+  name?: string
+  symbol?: string
+  description?: string
+  image?: string
+  decimals?: string
+  image_data?: string
+  uri?: string
+}
 
 const OFF_CHAIN_CONTENT_PREFIX = 0x01
 
@@ -33,14 +46,17 @@ function bufferToChunks(buff: Buffer, chunkSize: number) {
   return chunks
 }
 
-export function makeSnakeCell(data: Buffer): Cell {
-  const chunks = bufferToChunks(data, 127)
+export function makeSnakeCell(data: Buffer, addStartBit = false): Cell {
+  const chunks = bufferToChunks(data, 126)
 
   if (chunks.length === 0) {
     return beginCell().endCell()
   }
 
   if (chunks.length === 1) {
+    if (addStartBit) {
+      return beginCell().storeUint(0, 8).storeBuffer(chunks[0]).endCell()
+    }
     return beginCell().storeBuffer(chunks[0]).endCell()
   }
 
@@ -49,6 +65,9 @@ export function makeSnakeCell(data: Buffer): Cell {
   for (let i = chunks.length - 1; i >= 0; i--) {
     const chunk = chunks[i]
 
+    if (i === 0 && addStartBit) {
+      curCell.storeUint(0, 8)
+    }
     curCell.storeBuffer(chunk)
 
     if (i - 1 >= 0) {
@@ -76,4 +95,44 @@ export function decodeOffChainContent(content: Cell) {
     throw new Error(`Unknown content prefix: ${prefix.toString(16)}`)
   }
   return data.slice(1).toString()
+}
+
+const jettonKeys = [
+  'image', // img
+  'name',
+  'description',
+  // 'content_url',
+  'decimals',
+  'symbol',
+  'image_data',
+  'uri',
+]
+
+const jettonHashKeys = jettonKeys.map(sha256_sync)
+
+export function parseJettonContent(content: Cell) {
+  const data = content.asSlice()
+  const contentType = data.preloadUint(8)
+
+  const result: JettonContent = {}
+
+  if (contentType === 0) {
+    data.skip(8)
+    const dict = data.loadDict(Dictionary.Keys.Buffer(32), NFTDictValueSerializer)
+
+    for (const [i, key] of jettonKeys.entries()) {
+      const dictKey = jettonHashKeys[i]
+      const dictValue = dict.get(dictKey)
+      console.log('key', i, key, dictValue)
+      if (dictValue) {
+        result[key] = dictValue.content.toString('utf-8')
+      }
+    }
+  }
+
+  if (!result.decimals) {
+    result.decimals = '9'
+  }
+
+  return result
 }

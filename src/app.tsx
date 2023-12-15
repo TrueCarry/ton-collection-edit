@@ -16,6 +16,8 @@ export function App() {
             imageUrl:
               'https://raw.githubusercontent.com/TonDevWallet/TonDevWallet/main/src-tauri/icons/Square284x284Logo.png',
             universalLink: 'tondevwallet://connect/',
+            appName: 'TonDevWallet',
+            platforms: ['ios', 'android', 'macos', 'windows', 'linux'],
           },
         ],
       }}

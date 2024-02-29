@@ -13,6 +13,7 @@ import { DeployJetton } from '../DeployJetton'
 import { EditJetton } from '../EditJetton'
 import { EditJettonAdmin } from '../EditJettonAdmin'
 import { SendManyNfts } from '../SendManyNfts'
+import { EditNftEditable } from '../EditNftEditable'
 
 export function IndexPage() {
   return (
@@ -33,6 +34,7 @@ export function IndexPage() {
           <Tab>Edit Collection</Tab>
           <Tab>Edit Collection Owner</Tab>
           <Tab>Edit Single Nft</Tab>
+          <Tab>Edit Editable Nft</Tab>
 
           {/* <Tab>Deploy Telemint Numbers Collection</Tab> */}
           <Tab>Deploy Telemint Numbers Nft</Tab>
@@ -60,6 +62,9 @@ export function IndexPage() {
         </TabPanel>
         <TabPanel>
           <EditNftSingle />
+        </TabPanel>
+        <TabPanel>
+          <EditNftEditable />
         </TabPanel>
 
         {/* <TabPanel>

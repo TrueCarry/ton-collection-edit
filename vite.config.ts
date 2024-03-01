@@ -1,12 +1,14 @@
-import { defineConfig } from 'vite'
+import { PluginOption, defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'node:path'
 
 import { analyzer } from 'vite-bundle-analyzer'
 
+const addAnalyzer: PluginOption[] = process.env.ANALYZE === '1' ? [analyzer()] : []
+
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), analyzer()],
+  plugins: [react(), ...addAnalyzer],
   server: {
     port: 3000,
   },

@@ -58,7 +58,7 @@ export function EditNftEditable() {
       TupleItemInt,
       TupleItemInt,
       TupleItemCell, // cell
-      TupleItemSlice // slice
+      TupleItemSlice, // slice
     ]
     // const content = decodeOffChainContent(nftContent.cell)c
     const content = flattenSnakeCell(nftContent.cell).toString('utf-8')

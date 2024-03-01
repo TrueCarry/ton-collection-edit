@@ -48,47 +48,47 @@ export function IndexPage() {
           <Tab>Send Many Nfts</Tab>
         </TabList>
 
-        <TabPanel>
+        <TabPanel forceRender={true}>
           <DeployCollection />
         </TabPanel>
-        <TabPanel>
+        <TabPanel forceRender={true}>
           <DeployNfts />
         </TabPanel>
-        <TabPanel>
+        <TabPanel forceRender={true}>
           <EditNftCollection />
         </TabPanel>
-        <TabPanel>
+        <TabPanel forceRender={true}>
           <EditNftCollectionOwner />
         </TabPanel>
-        <TabPanel>
+        <TabPanel forceRender={true}>
           <EditNftSingle />
         </TabPanel>
-        <TabPanel>
+        <TabPanel forceRender={true}>
           <EditNftEditable />
         </TabPanel>
 
         {/* <TabPanel>
           <DeployTelemintNumbersCollection />
         </TabPanel> */}
-        <TabPanel>
+        <TabPanel forceRender={true}>
           <DeployTelemintNumbersNft />
         </TabPanel>
 
-        <TabPanel>
+        <TabPanel forceRender={true}>
           <DeployJetton />
         </TabPanel>
-        <TabPanel>
+        <TabPanel forceRender={true}>
           <EditJetton />
         </TabPanel>
-        <TabPanel>
+        <TabPanel forceRender={true}>
           <EditJettonAdmin />
         </TabPanel>
 
-        <TabPanel>
+        <TabPanel forceRender={true}>
           <DeployVanityContract />
         </TabPanel>
 
-        <TabPanel>
+        <TabPanel forceRender={true}>
           <SendManyNfts />
         </TabPanel>
       </Tabs>

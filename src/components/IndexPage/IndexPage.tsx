@@ -1,3 +1,4 @@
+import {TransferJetton} from "@/components/TransferJetton";
 import { ApiSettings } from '../ApiSettings'
 import { EditNftCollection } from '../EditNftCollection'
 import { EditNftSingle } from '../EditNftSingle'
@@ -42,6 +43,7 @@ export function IndexPage() {
           <Tab>Deploy Jetton</Tab>
           <Tab>Edit Jetton</Tab>
           <Tab>Edit Jetton Admin</Tab>
+          <Tab>Transfer Jetton</Tab>
 
           <Tab>Deploy Vanity Contract</Tab>
 
@@ -82,6 +84,9 @@ export function IndexPage() {
         </TabPanel>
         <TabPanel forceRender={true}>
           <EditJettonAdmin />
+        </TabPanel>
+        <TabPanel forceRender={true}>
+          <TransferJetton />
         </TabPanel>
 
         <TabPanel forceRender={true}>

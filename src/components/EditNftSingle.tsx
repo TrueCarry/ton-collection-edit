@@ -97,7 +97,7 @@ export function EditNftSingle() {
       TupleItemInt,
       TupleItemInt,
       TupleItemCell, // cell
-      TupleItemSlice // slice
+      TupleItemSlice, // slice
     ]
     const content = decodeOffChainContent(nftContent.cell)
 

@@ -3,11 +3,11 @@ import { Cell, beginCell, Address, toNano, Dictionary } from 'ton-core'
 // eslint-disable-next-line camelcase
 import { sha256_sync as sha256 } from 'ton-crypto'
 
-import walletHex from '@/contracts/jetton/jetton-wallet.compiled'
-import minterHex from '@/contracts/jetton/jetton-minter.compiled'
+// import walletHex from '@/contracts/jetton/jetton-wallet.compiled'
+// import minterHex from '@/contracts/jetton/jetton-minter.compiled'
 import { NFTDictValueSerializer } from '@/contracts/nft-content/nftDict'
 
-export const JETTON_DEPLOY_GAS = 250000000 // toNano(0.25)
+export const JETTON_DEPLOY_GAS = 2000000000 // toNano(0.25)
 
 export type JettonMetaDataKeys =
   | 'name'
@@ -31,8 +31,13 @@ const jettonOnChainMetadataSpec: {
 const ONCHAIN_CONTENT_PREFIX = 0x00
 const OFFCHAIN_CONTENT_PREFIX = 0x01
 
-export const JETTON_WALLET_CODE = Cell.fromBoc(Buffer.from(walletHex.hex, 'hex'))[0]
-export const JETTON_MINTER_CODE = Cell.fromBoc(Buffer.from(minterHex.hex, 'hex'))[0] // code cell from build output
+export const JETTON_WALLET_CODE = Cell.fromBase64(
+  'te6ccgEBAQEAIwAIQgKPRS16Tf10BmtoI2UXclntBXNENb52tf1L1divK3w9aA==' // usdt https://tonviewer.com/EQDjPkQF51gZCzj0w6f3qZIwwN5L8GJDMMmooNCkwmJlrQCT?section=code
+) // Cell.fromBoc(Buffer.from(walletHex.hex, 'hex'))[0]
+export const JETTON_MINTER_CODE = Cell.fromBase64(
+  'te6ccgECGAEABbsAART/APSkE/S88sgLAQIBYgIDAgLLBAUCASAUFQLz0MtDTAwFxsI47MIAg1yHTHwGCEBeNRRm6kTDhgEDXIfoAMO1E0PoA+kD6QNTU0VBFoUE0yFAF+gJQA88WAc8WzMzJ7VTg+kD6QDH6ADH0AfoAMfoAATFw+DoC0x8BAdM/ARLtRND6APpA+kDU1NEmghBkK30HuuMCJoGBwAdojhkZYOA54tkgUGD+gvAAZY1NVFhxwXy4EkE+kAh+kQwwADy4U36ANTRINDTHwGCEBeNRRm68uBIgEDXIfoA+kAx+kAx+gAg1wsAmtdLwAEBwAGw8rGRMOJUQxsIA/qCEHvdl966juc2OAX6APpA+ChUEgpwVGAEExUDyMsDWPoCAc8WAc8WySHIywET9AAS9ADLAMn5AHB0yMsCygfL/8nQUAjHBfLgShKhRBRQZgPIUAX6AlADzxYBzxbMzMntVPpA0SDXCwHAALORW+MN4CaCECx2uXO64wI1JQoLDAGOIZFykXHi+DkgbpOBJCeRIOIhbpQxgShzkQHiUCOoE6BzgQOjcPg8oAJw+DYSoAFw+Dagc4EECYIQCWYBgHD4N6C88rAlWX8JAOyCEDuaygBw+wL4KEUEcFRgBBMVA8jLA1j6AgHPFgHPFskhyMsBE/QAEvQAywDJIPkAcHTIywLKB8v/ydDIgBgBywUBzxZY+gICmFh3UAPLa8zMlzABcVjLasziyYAR+wBQBaBDFMhQBfoCUAPPFgHPFszMye1UAETIgBABywUBzxZw+gJwActqghDVMnbbAcsfAQHLP8mAQvsAAfwUXwQyNAH6QNIAAQHRlcghzxbJkW3iyIAQAcsFUATPFnD6AnABy2qCENFzVAAByx9QBAHLPyP6RDDAAI41+ChEBHBUYAQTFQPIywNY+gIBzxYBzxbJIcjLARP0ABL0AMsAyfkAcHTIywLKB8v/ydASzxaXMWwScAHLAeL0AMkNBPiCEGUB81S6jiIxNDZRRccF8uBJAvpA0RA0AshQBfoCUAPPFgHPFszMye1U4CWCEPuI4Rm6jiEyNDYD0VExxwXy4EmLAlUSyFAF+gJQA88WAc8WzMzJ7VTgNCSCECNcr1K64wI3I4IQy4YpArrjAjZbIIIQJQjWarrjAmwxDg8QEQAIgFD7AALsMDEyUDPHBfLgSfpA+gDU0SDQ0x8BAYBA1yEhghAPin6luo5NNiCCEFlfB7y6jiwwBPoAMfpAMfQB0SD4OSBulDCBFp/ecYEC8nD4OAFw+DaggRp3cPg2oLzysI4TghDu0jbTupUE0wMx0ZQ08sBI4uLjDVADcBITAEQzUULHBfLgSchQA88WyRNEQMhQBfoCUAPPFgHPFszMye1UAB4wAscF8uBJ1NTRAe1U+wQAGIIQ03IVjLrchA/y8ADOMfoAMfpAMfpAMfQB+gAg1wsAmtdLwAEBwAGw8rGRMOJUQhYhkXKRceL4OSBuk4EkJ5Eg4iFulDGBKHORAeJQI6gToHOBA6Nw+DygAnD4NhKgAXD4NqBzgQQJghAJZgGAcPg3oLzysADAghA7msoAcPsC+ChFBHBUYAQTFQPIywNY+gIBzxYBzxbJIcjLARP0ABL0AMsAySD5AHB0yMsCygfL/8nQyIAYAcsFAc8WWPoCAphYd1ADy2vMzJcwAXFYy2rM4smAEfsAACW9mt9qJofQB9IH0gampoiBIvgkAgJxFhcAha289qJofQB9IH0gampoii+CfBQAuCowAgmKgeRlgax9AQDniwDni2SQ5GWAifoACXoAZYBk/IA4OmRlgWUD5f/k6EAAz68W9qJofQB9IH0gampov5noNsF4OHLr21FNnJfCg7fwrlF5Ap4rYRnDlGJxnk9G7Y90E+YseApBeHdAfpePAaQHEUEbGst3Opa92T+oO7XKhDUBPIxLOskfRYm0eAo4ZGWD+gBkoYBA'
+) // usdt master
+// Cell.fromBoc(Buffer.from(minterHex.hex, 'hex'))[0] // code cell from build output
 
 interface JettonDeployParams {
   onchainMetaData?: {
@@ -55,7 +60,7 @@ export function createJettonDeployParams(params: JettonDeployParams, offchainUri
     data: initJettonData(params.owner, params.onchainMetaData, offchainUri),
     deployer: params.owner,
     value: JETTON_DEPLOY_GAS,
-    message: mintJettonBody(params.owner, params.amountToMint, 20000000n, queryId),
+    message: mintJettonBody(params.owner, params.amountToMint, toNano('0.5'), queryId),
   }
 }
 
@@ -67,7 +72,7 @@ export function createJettonDeployParams(params: JettonDeployParams, offchainUri
 enum OPS {
   ChangeAdmin = 3,
   ReplaceMetadata = 4,
-  Mint = 21,
+  Mint = 0x642b7d07, // 21,
   InternalTransfer = 0x178d4519,
   Transfer = 0xf8a7ea5,
   Burn = 0x595f07bc,
@@ -214,11 +219,14 @@ export function initJettonData(
   return beginCell()
     .storeCoins(0)
     .storeAddress(owner)
-    .storeRef(
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      offchainUri ? buildJettonOffChainMetadata(offchainUri) : buildJettonOnchainMetadata(data!)
-    )
+    .storeAddress(owner)
     .storeRef(JETTON_WALLET_CODE)
+    .storeRef(
+      beginCell().storeStringTail('content').endCell()
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      // offchainUri ? buildJettonOffChainMetadata(offchainUri) : buildJettonOnchainMetadata(data!)
+    )
+
     .endCell()
 }
 
@@ -241,7 +249,7 @@ export function mintJettonBody(
         .storeCoins(jettonValue)
         .storeAddress(null)
         .storeAddress(owner)
-        .storeCoins(1000000n)
+        .storeCoins(toNano('0.1'))
         .storeBit(false) // forward_payload in this slice, not separate cell
         .endCell()
     )
@@ -266,7 +274,7 @@ export function transferJetton(to: Address, from: Address, jettonAmount: bigint)
     .storeAddress(to)
     .storeAddress(from)
     .storeBit(false)
-    .storeCoins(toNano(0.001))
+    .storeCoins(toNano('0.1'))
     .storeBit(false) // forward_payload in this slice, not separate cell
     .endCell()
 }

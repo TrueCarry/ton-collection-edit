@@ -1,7 +1,6 @@
 import { storeJettonTransferMessage } from '@/contracts/jetton/jetton-wallet'
 import { useTonClient } from '@/store/tonClient'
 import { useTonAddress } from '@tonconnect/ui-react'
-import BN from 'bn.js'
 import { useEffect, useMemo, useState } from 'react'
 import { Address, beginCell, Cell, TupleBuilder } from 'ton-core'
 import { ResultContainer } from './ResultContainer'
@@ -236,11 +235,7 @@ export function TransferJetton() {
 
       {deployParams && (
         <>
-          <ResultContainer
-            address={jettonWalletAddress}
-            cell={deployParams}
-            amount={new BN(100000000)}
-          />
+          <ResultContainer address={jettonWalletAddress} cell={deployParams} amount={100000000n} />
         </>
       )}
     </div>

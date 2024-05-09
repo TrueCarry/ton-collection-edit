@@ -1,9 +1,8 @@
-import {TransferJetton} from "@/components/TransferJetton";
+import { TransferJetton } from '@/components/TransferJetton'
 import { ApiSettings } from '../ApiSettings'
 import { EditNftCollection } from '../EditNftCollection'
 import { EditNftSingle } from '../EditNftSingle'
 import { Tab, TabList, TabPanel, Tabs } from 'react-tabs'
-import 'react-tabs/style/react-tabs.css'
 import { EditNftCollectionOwner } from '../EditNftCollectionOwner'
 import { DeployCollection } from '../DeployCollection'
 import { TonConnectButton } from '@tonconnect/ui-react'
@@ -15,6 +14,8 @@ import { EditJetton } from '../EditJetton'
 import { EditJettonAdmin } from '../EditJettonAdmin'
 import { SendManyNfts } from '../SendManyNfts'
 import { EditNftEditable } from '../EditNftEditable'
+
+import 'react-tabs/style/react-tabs.css'
 
 export function IndexPage() {
   return (

@@ -14,6 +14,7 @@ import { EditJetton } from '../EditJetton'
 import { EditJettonAdmin } from '../EditJettonAdmin'
 import { SendManyNfts } from '../SendManyNfts'
 import { EditNftEditable } from '../EditNftEditable'
+import { EditNftSalePrice } from '../EditNftSalePrice'
 
 import 'react-tabs/style/react-tabs.css'
 
@@ -49,6 +50,7 @@ export function IndexPage() {
           <Tab>Deploy Vanity Contract</Tab>
 
           <Tab>Send Many Nfts</Tab>
+          <Tab>Edit Nft Sale Price</Tab>
         </TabList>
 
         <TabPanel forceRender={true}>
@@ -96,6 +98,9 @@ export function IndexPage() {
 
         <TabPanel forceRender={true}>
           <SendManyNfts />
+        </TabPanel>
+        <TabPanel forceRender={true}>
+          <EditNftSalePrice />
         </TabPanel>
       </Tabs>
     </div>

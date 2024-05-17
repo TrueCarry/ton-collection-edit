@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
-import { Address } from 'ton-core'
+import { Address, toNano } from 'ton-core'
 
 import { useTonAddress, useTonConnectUI, useTonWallet } from '@tonconnect/ui-react'
 import { BuildTransferNftBody } from '@/contracts/nftItem/NftItem'
@@ -53,14 +53,16 @@ export function parseSendCsv(content: string): SendNftRow[] {
   return nfts
 }
 
-const NftTransferAmount = 40000000n // 0.04 TON
-const NftForwardAmount = 10000000n // 0.01 TON
+// const NftTransferAmount = 40000000n // 0.04 TON
+// const NftForwardAmount = 10000000n // 0.01 TON
 
 export function SendManyNfts() {
   const [sendCsv, setSendCsv] = useState<SendNftRow[]>([])
   const wallet = useTonWallet()
   const myAddress = useTonAddress()
   const [tonConnectUI] = useTonConnectUI()
+  const [nftTransferAmount, setNftTransferAmount] = useState('0.05')
+  const [nftForwardAmount, setNftForwardAmount] = useState('0.01')
 
   const sendList = useMemo<TonConnectMessage[]>(() => {
     if (!sendCsv) {
@@ -71,20 +73,20 @@ export function SendManyNfts() {
       return {
         payload: BuildTransferNftBody({
           newOwner: Address.parse(row.userAddress),
-          forwardAmount: NftForwardAmount,
+          forwardAmount: toNano(nftForwardAmount),
           forwardPayload: undefined,
           responseTo: Address.parse(myAddress),
         })
           .toBoc()
           .toString('base64'),
         address: row.nftAddress,
-        amount: NftTransferAmount.toString(),
+        amount: toNano(nftTransferAmount).toString(),
       }
     })
     // const message = changeAdminBodyJetton(Address.parse(adminAddress))
 
     // return message
-  }, [sendCsv, myAddress])
+  }, [sendCsv, myAddress, nftTransferAmount, nftForwardAmount])
 
   const attachFile = async (e) => {
     const files: File[] = e.target.files
@@ -112,6 +114,36 @@ export function SendManyNfts() {
 
   return (
     <div className="container mx-auto">
+      <div className="flex">
+        <div>
+          <label htmlFor="nftTransferAmount">Amount of TON to send with tx:</label>
+          <input
+            className="w-full px-2 py-2 bg-gray-200 rounded"
+            type="number"
+            id="nftTransferAmount"
+            value={nftTransferAmount}
+            onChange={(e) => setNftTransferAmount(e.target.value)}
+          />
+        </div>
+      </div>
+
+      <div className="flex">
+        <div>
+          <label htmlFor="nftForwardAmount">Forward amount:</label>
+          <div className="text-sm text-gray-500">
+            Amount of ton that would be send from nft to new owner with notification. Should be less
+            than transfer amount
+          </div>
+          <input
+            className="w-full px-2 py-2 bg-gray-200 rounded"
+            type="number"
+            id="nftForwardAmount"
+            value={nftForwardAmount}
+            onChange={(e) => setNftForwardAmount(e.target.value)}
+          />
+        </div>
+      </div>
+
       <div>
         <label htmlFor="sendList">Send List:</label>
         <input

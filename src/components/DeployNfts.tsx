@@ -7,7 +7,7 @@ import { decodeOffChainContent } from '@/contracts/nft-content/nftContent'
 import { useTonClient } from '@/store/tonClient'
 import { useTonConnectUI } from '@tonconnect/ui-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Address, Cell, TupleItemCell, TupleItemInt } from 'ton-core'
+import { Address, Cell, toNano, TupleItemCell, TupleItemInt } from 'ton-core'
 import { TupleItemSlice } from 'ton-core/dist/tuple/tuple'
 
 interface CollectionInfo {
@@ -39,6 +39,7 @@ export function DeployNfts() {
   const [count, setCount] = useState<number>(1)
   const [batchSize, setBatchSize] = useState<number>(50)
   const [template, setTemplate] = useState<string>('{id}.json')
+  const [mintGram, setMintGram] = useState<string>('0.05')
 
   const replaceId = (template: string, id: number) => {
     return template.replace(/{id}/g, id.toString())
@@ -92,7 +93,7 @@ export function DeployNfts() {
     ] as [
       TupleItemInt, // bn
       TupleItemCell, // cell
-      TupleItemSlice // slice
+      TupleItemSlice, // slice
     ]
     const content = decodeOffChainContent(collectionContent.cell)
 
@@ -159,7 +160,7 @@ export function DeployNfts() {
         ? Queries.batchMintEditable({
             items: nftIds.map((i) => {
               return {
-                passAmount: 10000000n,
+                passAmount: toNano(mintGram),
                 content: replaceId(template || '', i),
                 index: i,
                 ownerAddress: Address.parse(tonConnectUI.account?.address || ''),
@@ -170,7 +171,7 @@ export function DeployNfts() {
         : Queries.batchMint({
             items: nftIds.map((i) => {
               return {
-                passAmount: 10000000n,
+                passAmount: toNano(mintGram),
                 content: replaceId(template || '', i),
                 index: i,
                 ownerAddress: Address.parse(tonConnectUI.account?.address || ''),
@@ -178,7 +179,7 @@ export function DeployNfts() {
             }),
           })
 
-      const messageValue = (10000000n + 17500000n) * BigInt(nftIds.length)
+      const messageValue = (toNano(mintGram) + 17500000n) * BigInt(nftIds.length)
       messages.push({
         address: collectionAddress,
         amount: messageValue.toString(),
@@ -187,7 +188,7 @@ export function DeployNfts() {
     }
 
     return messages
-  }, [start, count, template, collectionInfo, tonConnectUI.account, tonClient])
+  }, [start, count, template, collectionInfo, tonConnectUI.account, tonClient, mintGram])
 
   const sendTx = useCallback(() => {
     tonConnectUI.sendTransaction({
@@ -265,6 +266,22 @@ export function DeployNfts() {
 
       <div className="flex">
         <div>
+          <label htmlFor="mintGram">Initial NFT Balance:</label>
+          <div className="text-sm text-gray-500">
+            0.05 is recommended for normal nfts, but you can use 0.01 for testing purposes
+          </div>
+          <input
+            className="w-full px-2 py-2 bg-gray-200 rounded"
+            type="number"
+            id="mintGram"
+            value={mintGram}
+            onChange={(e) => setMintGram(e.target.value)}
+          />
+        </div>
+      </div>
+
+      <div className="flex">
+        <div>
           <label htmlFor="mintStart">Start from:</label>
           <input
             className="w-full px-2 py-2 bg-gray-200 rounded"
@@ -295,7 +312,10 @@ export function DeployNfts() {
       <div className="flex">
         <div>
           <label htmlFor="mintCount">Nfts to mint:</label>
-          <div className="text-sm text-gray-500">Max: 4 * batchSize ({4 * batchSize})</div>
+          <div className="text-sm text-gray-500">
+            Max: 4 * batchSize ({4 * batchSize}). If your wallet (w5 for example) support sending
+            more than 4 messages, you can use more batches
+          </div>
           <input
             className="w-full px-2 py-2 bg-gray-200 rounded"
             type="number"
@@ -318,10 +338,13 @@ export function DeployNfts() {
             value={template || ''}
             onChange={(e) => setTemplate(e.target.value)}
           />
-          <div>Last nft example: {replaceId(template, start + count)}</div>
+          <div>Last nft example: {replaceId(template, start + count - 1)}</div>
           <div>
-            Full url: {collectionInfo.base}
-            {replaceId(template, start + count)}
+            Full url (If you click on that url, valid nft metadata should be opened in your
+            browser):{' '}
+            <a href={`${collectionInfo.base}${replaceId(template, start + count - 1)}`}>
+              {replaceId(template, start + count - 1)}
+            </a>
           </div>
         </div>
       </div>

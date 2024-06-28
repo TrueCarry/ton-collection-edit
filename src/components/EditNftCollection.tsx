@@ -6,12 +6,17 @@ import { useEffect, useMemo, useState } from 'react'
 import { Address, Cell, TupleItemInt } from 'ton-core'
 import { TupleItemCell, TupleItemSlice } from 'ton-core/dist/tuple/tuple'
 import { ResultContainer } from './ResultContainer'
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
+import { Input } from './ui/input'
+import { Label } from './ui/label'
+import { Button } from './ui/button'
 
 interface CollectionInfo {
   content: string
   base: string
   royalty: RoyaltyParams
 }
+
 export function EditNftCollection() {
   const [collectionAddress, setCollectionAddress] = useState('')
   const [collectionInfo, setCollectionInfo] = useState<CollectionInfo>({
@@ -70,7 +75,7 @@ export function EditNftCollection() {
     ] as [
       TupleItemInt, // bn
       TupleItemCell, // cell
-      TupleItemSlice // slice
+      TupleItemSlice, // slice
     ]
     const content = decodeOffChainContent(collectionContent.cell)
 
@@ -110,136 +115,129 @@ export function EditNftCollection() {
   }, [collectionInfo])
 
   return (
-    <div className="container mx-auto">
-      <div className="">
-        <div>
-          <label htmlFor="collectionAddress">Collection Address:</label>
-          <input
-            className="w-full px-2 py-2 bg-gray-200 rounded"
-            type="text"
-            id="collectionAddress"
-            value={collectionAddress}
-            onChange={(e) => setCollectionAddress(e.target.value)}
-          />
-        </div>
-      </div>
-      {collectionInfo.base && (
-        <>
-          <div className="py-2">
-            <div>Collection Info:</div>
-            <div>
-              <label htmlFor="collectionContent">Collection Content:</label>
-              <input
-                className="w-full px-2 py-2 bg-gray-200 rounded"
-                type="text"
-                id="collectionContent"
-                value={collectionInfo?.content}
-                onChange={(e) =>
-                  setCollectionInfo({
-                    ...collectionInfo,
-                    content: e.target.value,
-                  })
-                }
-              />
-            </div>
-            <div>
-              <label htmlFor="collectionBase">Collection Base:</label>
-              <input
-                className="w-full px-2 py-2 bg-gray-200 rounded"
-                type="text"
-                id="collectionBase"
-                value={collectionInfo?.base}
-                onChange={(e) =>
-                  setCollectionInfo({
-                    ...collectionInfo,
-                    base: e.target.value,
-                  })
-                }
+    <div className="w-full max-w-3xl mx-auto flex flex-col gap-4">
+      <Card className="">
+        <CardHeader>
+          <CardTitle>Edit NFT Collection</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="collectionAddress">Collection Address</Label>
+              <Input
+                id="collectionAddress"
+                value={collectionAddress}
+                onChange={(e) => setCollectionAddress(e.target.value)}
+                placeholder="Enter collection address"
               />
             </div>
 
-            {/* Royalty */}
-            <div>
-              <label htmlFor="royaltyFactor">Collection Royalty Factor:</label>
-              <input
-                className="w-full px-2 py-2 bg-gray-200 rounded"
-                type="text"
-                id="royaltyFactor"
-                value={collectionInfo.royalty.royaltyFactor}
-                onChange={(e) =>
-                  setCollectionInfo({
-                    ...collectionInfo,
-                    royalty: {
-                      ...collectionInfo.royalty,
-                      royaltyFactor: parseInt(e.target.value) || 0,
-                    },
-                  })
-                }
-              />
-            </div>
-            <div>
-              <label htmlFor="royaltyBase">Collection Royalty Base:</label>
-              <input
-                className="w-full px-2 py-2 bg-gray-200 rounded"
-                type="text"
-                id="royaltyBase"
-                value={collectionInfo.royalty.royaltyBase}
-                onChange={(e) =>
-                  setCollectionInfo({
-                    ...collectionInfo,
-                    royalty: {
-                      ...collectionInfo.royalty,
-                      royaltyBase: parseInt(e.target.value) || 0,
-                    },
-                  })
-                }
-              />
-            </div>
-            <div>
-              <label htmlFor="royaltyResult">Collection Resulting Royalty(Factor/Base):</label>
-              <input
-                className="w-full px-2 py-2 bg-gray-200 rounded"
-                type="text"
-                id="royaltyResult"
-                value={`${
-                  collectionInfo.royalty.royaltyFactor / collectionInfo.royalty.royaltyBase
-                } (${
-                  (collectionInfo.royalty.royaltyFactor / collectionInfo.royalty.royaltyBase) * 100
-                }%)`}
-                disabled
-              />
-            </div>
-            {/* /Royalty */}
+            {collectionInfo.base && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="collectionContent">Collection Content</Label>
+                  <Input
+                    id="collectionContent"
+                    value={collectionInfo?.content}
+                    onChange={(e) =>
+                      setCollectionInfo({
+                        ...collectionInfo,
+                        content: e.target.value,
+                      })
+                    }
+                  />
+                </div>
 
-            <div>
-              <label htmlFor="royaltyAddress">Collection Royalty Address:</label>
-              <input
-                className="w-full px-2 py-2 bg-gray-200 rounded"
-                type="text"
-                id="royaltyAddress"
-                value={collectionInfo.royalty.royaltyAddress.toString({
-                  bounceable: true,
-                  urlSafe: true,
-                })}
-                onChange={(e) =>
-                  setCollectionInfo({
-                    ...collectionInfo,
-                    royalty: {
-                      ...collectionInfo.royalty,
-                      royaltyAddress: Address.parse(e.target.value),
-                    },
-                  })
-                }
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="collectionBase">Collection Base</Label>
+                  <Input
+                    id="collectionBase"
+                    value={collectionInfo?.base}
+                    onChange={(e) =>
+                      setCollectionInfo({
+                        ...collectionInfo,
+                        base: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="royaltyFactor">Collection Royalty Factor</Label>
+                  <Input
+                    id="royaltyFactor"
+                    type="number"
+                    value={collectionInfo.royalty.royaltyFactor}
+                    onChange={(e) =>
+                      setCollectionInfo({
+                        ...collectionInfo,
+                        royalty: {
+                          ...collectionInfo.royalty,
+                          royaltyFactor: parseInt(e.target.value) || 0,
+                        },
+                      })
+                    }
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="royaltyBase">Collection Royalty Base</Label>
+                  <Input
+                    id="royaltyBase"
+                    type="number"
+                    value={collectionInfo.royalty.royaltyBase}
+                    onChange={(e) =>
+                      setCollectionInfo({
+                        ...collectionInfo,
+                        royalty: {
+                          ...collectionInfo.royalty,
+                          royaltyBase: parseInt(e.target.value) || 0,
+                        },
+                      })
+                    }
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="royaltyResult">Collection Resulting Royalty (Factor/Base)</Label>
+                  <Input
+                    id="royaltyResult"
+                    value={`${
+                      collectionInfo.royalty.royaltyFactor / collectionInfo.royalty.royaltyBase
+                    } (${
+                      (collectionInfo.royalty.royaltyFactor / collectionInfo.royalty.royaltyBase) *
+                      100
+                    }%)`}
+                    disabled
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="royaltyAddress">Collection Royalty Address</Label>
+                  <Input
+                    id="royaltyAddress"
+                    value={collectionInfo.royalty.royaltyAddress.toString({
+                      bounceable: true,
+                      urlSafe: true,
+                    })}
+                    onChange={(e) =>
+                      setCollectionInfo({
+                        ...collectionInfo,
+                        royalty: {
+                          ...collectionInfo.royalty,
+                          royaltyAddress: Address.parse(e.target.value),
+                        },
+                      })
+                    }
+                  />
+                </div>
+              </>
+            )}
+
+            <Button onClick={updateInfo}>Refresh</Button>
           </div>
-        </>
-      )}
-      <div className="my-2">
-        <button onClick={updateInfo} className="px-4 py-2 rounded text-white bg-blue-600">
-          Refresh
-        </button>
-      </div>
+        </CardContent>
+      </Card>
 
       <ResultContainer address={collectionAddress} cell={editContent} amount={new BN('10000000')} />
     </div>

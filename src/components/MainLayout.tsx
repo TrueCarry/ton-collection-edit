@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { useLocation, Outlet } from 'react-router-dom'
 import { NavigationLinks } from './NavigationLinks'
+import { ApiSettings } from './ApiSettings'
 
 export function MainLayout() {
   const location = useLocation()
@@ -27,6 +28,7 @@ export function MainLayout() {
       </div>
       <div className="flex flex-col">
         <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
+          <ApiSettings />
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon" className="shrink-0 md:hidden">

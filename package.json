@@ -66,6 +66,7 @@
     "react-jazzicon": "^1.0.4",
     "react-qr-code": "^2.0.12",
     "react-resizable-panels": "^2.0.19",
+    "react-router-dom": "^6.24.0",
     "react-tabs": "^6.0.2",
     "react-use-localstorage": "^3.5.3",
     "reactjs-popup": "^2.0.6",

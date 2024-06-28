@@ -40,7 +40,7 @@ export function EditNftCollectionOwner() {
     ] as [
       TupleItemInt, // bn
       TupleItemCell, // cell
-      TupleItemSlice // slice
+      TupleItemSlice, // slice
     ]
 
     const owner = ownerAddress.cell.beginParse().loadAddress()

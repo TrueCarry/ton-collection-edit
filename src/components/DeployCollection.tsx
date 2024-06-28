@@ -7,6 +7,10 @@ import BN from 'bn.js'
 import { useMemo, useState } from 'react'
 import { Address, Cell } from 'ton-core'
 import { ResultContainer } from './ResultContainer'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
+import { Input } from './ui/input'
+import { Label } from './ui/label'
+import { Switch } from './ui/switch'
 
 interface CollectionInfo {
   content: string
@@ -15,6 +19,7 @@ interface CollectionInfo {
   owner: Address
   nftEditable: boolean
 }
+
 export function DeployCollection() {
   const [collectionInfo, setCollectionInfo] = useState<CollectionInfo>({
     content: '',
@@ -41,7 +46,7 @@ export function DeployCollection() {
         royaltyFactor: collectionInfo.royalty.royaltyFactor,
       },
     })
-    console.log('addres', init.address.toRawString())
+    console.log('address', init.address.toRawString())
 
     return init
   }, [collectionInfo])
@@ -51,174 +56,142 @@ export function DeployCollection() {
   }, [collectionInit])
 
   return (
-    <div className="container mx-auto">
-      <div className="">
-        <div>
-          <label htmlFor="collectionAddress">Collection Address:</label>
-          <input
-            className="w-full px-2 py-2 bg-gray-200 rounded"
-            type="text"
+    <Card className="w-full max-w-3xl mx-auto">
+      <CardHeader>
+        <CardTitle>Deploy Collection</CardTitle>
+        <CardDescription>Create a new NFT collection on the TON blockchain.</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="collectionAddress">Collection Address</Label>
+          <Input
             id="collectionAddress"
             value={collectionAddress.toString({ bounceable: true, urlSafe: true })}
             readOnly
           />
+          <p className="text-sm text-muted-foreground">
+            This is the address of your new collection contract.
+          </p>
         </div>
-      </div>
-      {
-        <>
-          <div className="py-2">
-            <div className="flex">
-              <div>
-                <label htmlFor="collectionEditable">Collection Nfts Editable:</label>
-                <input
-                  className="ml-2 bg-gray-200 rounded"
-                  type="checkbox"
-                  id="collectionEditable"
-                  checked={collectionInfo?.nftEditable}
-                  onChange={(e) =>
-                    setCollectionInfo({
-                      ...collectionInfo,
-                      nftEditable: e.target.checked,
-                    })
-                  }
-                />
-              </div>
-            </div>
 
-            <div>
-              <label htmlFor="collectionContent">Collection Content:</label>
-              <input
-                className="w-full px-2 py-2 bg-gray-200 rounded"
-                type="text"
-                id="collectionContent"
-                value={collectionInfo?.content}
-                onChange={(e) =>
-                  setCollectionInfo({
-                    ...collectionInfo,
-                    content: e.target.value,
-                  })
-                }
-              />
-            </div>
+        <div className="flex items-center space-x-2">
+          <Switch
+            id="collectionEditable"
+            checked={collectionInfo.nftEditable}
+            onCheckedChange={(checked) =>
+              setCollectionInfo({ ...collectionInfo, nftEditable: checked })
+            }
+          />
+          <Label htmlFor="collectionEditable">Collection NFTs Editable</Label>
+        </div>
 
-            <div>
-              <label htmlFor="collectionBase">Collection Base:</label>
-              <input
-                className="w-full px-2 py-2 bg-gray-200 rounded"
-                type="text"
-                id="collectionBase"
-                value={collectionInfo?.base}
-                onChange={(e) =>
-                  setCollectionInfo({
-                    ...collectionInfo,
-                    base: e.target.value,
-                  })
-                }
-              />
-            </div>
+        <div className="space-y-2">
+          <Label htmlFor="collectionContent">Collection Content</Label>
+          <Input
+            id="collectionContent"
+            value={collectionInfo.content}
+            onChange={(e) => setCollectionInfo({ ...collectionInfo, content: e.target.value })}
+          />
+          <p className="text-sm text-muted-foreground">
+            The content for your collection (e.g., IPFS hash or URL).
+          </p>
+        </div>
 
-            {/* Royalty */}
-            <div>
-              <label htmlFor="royaltyFactor">Collection Royalty Factor:</label>
-              <input
-                className="w-full px-2 py-2 bg-gray-200 rounded"
-                type="text"
-                id="royaltyFactor"
-                value={collectionInfo.royalty.royaltyFactor}
-                onChange={(e) =>
-                  setCollectionInfo({
-                    ...collectionInfo,
-                    royalty: {
-                      ...collectionInfo.royalty,
-                      royaltyFactor: parseInt(e.target.value) || 0,
-                    },
-                  })
-                }
-              />
-            </div>
-            {/* <div>
-              <label htmlFor="royaltyBase">Collection Royalty Base:</label>
-              <input
-                className="w-full px-2 py-2 bg-gray-200 rounded"
-                type="text"
-                id="royaltyBase"
-                value={collectionInfo.royalty.royaltyBase}
-                onChange={(e) =>
-                  setCollectionInfo({
-                    ...collectionInfo,
-                    royalty: {
-                      ...collectionInfo.royalty,
-                      royaltyBase: parseInt(e.target.value) || 0,
-                    },
-                  })
-                }
-              />
-            </div> */}
-            <div>
-              <label htmlFor="royaltyResult">Collection Resulting Royalty(Factor/Base):</label>
-              <input
-                className="w-full px-2 py-2 bg-gray-200 rounded"
-                type="text"
-                id="royaltyResult"
-                value={`${
-                  collectionInfo.royalty.royaltyFactor / collectionInfo.royalty.royaltyBase
-                } (${
-                  (collectionInfo.royalty.royaltyFactor / collectionInfo.royalty.royaltyBase) * 100
-                }%)`}
-                disabled
-              />
-            </div>
-            {/* /Royalty */}
+        <div className="space-y-2">
+          <Label htmlFor="collectionBase">Collection Base</Label>
+          <Input
+            id="collectionBase"
+            value={collectionInfo.base}
+            onChange={(e) => setCollectionInfo({ ...collectionInfo, base: e.target.value })}
+          />
+          <p className="text-sm text-muted-foreground">The base URI for your NFT metadata.</p>
+        </div>
 
-            <div>
-              <label htmlFor="royaltyAddress">Collection Royalty Address:</label>
-              <input
-                className="w-full px-2 py-2 bg-gray-200 rounded"
-                type="text"
-                id="royaltyAddress"
-                value={collectionInfo.royalty.royaltyAddress.toString({
-                  bounceable: true,
-                  urlSafe: true,
-                })}
-                onChange={(e) =>
-                  setCollectionInfo({
-                    ...collectionInfo,
-                    royalty: {
-                      ...collectionInfo.royalty,
-                      royaltyAddress: Address.parse(e.target.value),
-                    },
-                  })
-                }
-              />
-            </div>
-            <div>
-              <label htmlFor="royaltyAddress">Collection Owner:</label>
-              <input
-                className="w-full px-2 py-2 bg-gray-200 rounded"
-                type="text"
-                id="royaltyAddress"
-                value={collectionInfo.owner.toString({
-                  bounceable: true,
-                  urlSafe: true,
-                })}
-                onChange={(e) =>
-                  setCollectionInfo({
-                    ...collectionInfo,
-                    owner: Address.parse(e.target.value),
-                  })
-                }
-              />
-            </div>
-          </div>
-        </>
-      }
+        <div className="space-y-2">
+          <Label htmlFor="royaltyFactor">Collection Royalty Factor</Label>
+          <Input
+            id="royaltyFactor"
+            type="number"
+            value={collectionInfo.royalty.royaltyFactor}
+            onChange={(e) =>
+              setCollectionInfo({
+                ...collectionInfo,
+                royalty: {
+                  ...collectionInfo.royalty,
+                  royaltyFactor: parseInt(e.target.value) || 0,
+                },
+              })
+            }
+          />
+          <p className="text-sm text-muted-foreground">
+            The royalty factor for secondary sales (e.g., 50 for 5%).
+          </p>
+        </div>
 
-      <ResultContainer
-        address={collectionAddress.toRawString()}
-        cell={new Cell()}
-        amount={new BN('10000000')}
-        init={collectionInit.stateInit}
-      />
-    </div>
+        <div className="space-y-2">
+          <Label htmlFor="royaltyResult">Resulting Royalty</Label>
+          <Input
+            id="royaltyResult"
+            value={`${collectionInfo.royalty.royaltyFactor / collectionInfo.royalty.royaltyBase} (${
+              (collectionInfo.royalty.royaltyFactor / collectionInfo.royalty.royaltyBase) * 100
+            }%)`}
+            readOnly
+          />
+          <p className="text-sm text-muted-foreground">
+            The calculated royalty percentage for this collection.
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="royaltyAddress">Royalty Address</Label>
+          <Input
+            id="royaltyAddress"
+            value={collectionInfo.royalty.royaltyAddress.toString({
+              bounceable: true,
+              urlSafe: true,
+            })}
+            onChange={(e) =>
+              setCollectionInfo({
+                ...collectionInfo,
+                royalty: {
+                  ...collectionInfo.royalty,
+                  royaltyAddress: Address.parse(e.target.value),
+                },
+              })
+            }
+          />
+          <p className="text-sm text-muted-foreground">
+            The address that will receive the royalties.
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="ownerAddress">Collection Owner</Label>
+          <Input
+            id="ownerAddress"
+            value={collectionInfo.owner.toString({
+              bounceable: true,
+              urlSafe: true,
+            })}
+            onChange={(e) =>
+              setCollectionInfo({
+                ...collectionInfo,
+                owner: Address.parse(e.target.value),
+              })
+            }
+          />
+          <p className="text-sm text-muted-foreground">
+            The address that will own and manage this collection.
+          </p>
+        </div>
+
+        <ResultContainer
+          address={collectionAddress.toRawString()}
+          cell={new Cell()}
+          amount={new BN('10000000')}
+          init={collectionInit.stateInit}
+        />
+      </CardContent>
+    </Card>
   )
 }

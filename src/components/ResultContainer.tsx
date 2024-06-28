@@ -3,6 +3,12 @@ import { useCallback, useMemo } from 'react'
 import { Cell, loadStateInit } from 'ton'
 import { useTonWallet, useTonConnectUI } from '@tonconnect/ui-react'
 
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { CopyButton } from '@/components/items/CopyButton'
+
 export function ResultContainer({
   address,
   cell,
@@ -39,7 +45,6 @@ export function ResultContainer({
         stateInit?.data &&
         stateInit.data.toBoc().toString('base64').replace(/\//g, '_').replace(/\+/g, '-'),
     }
-    // return init && init.toBoc().toString('base64').replace(/\//g, '_').replace(/\+/g, '-')
   }, [init])
 
   const sendTonConnectTx = useCallback(() => {
@@ -57,51 +62,69 @@ export function ResultContainer({
   }, [address, amount, binData, initCell])
 
   return (
-    <div>
-      <div className="flex items-center gap-2">
-        <div>TonConnect:</div>
-        {wallet ? (
-          <button className="px-4 py-2 rounded text-white bg-blue-600" onClick={sendTonConnectTx}>
-            Send Transaction
-          </button>
-        ) : (
-          <div>Connect TonConnect wallet to send tx</div>
-        )}
-      </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Transaction Details</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <div>TonConnect:</div>
+            {wallet ? (
+              <Button onClick={sendTonConnectTx}>Send Transaction</Button>
+            ) : (
+              <div>Connect TonConnect wallet to send tx</div>
+            )}
+          </div>
 
-      <div>
-        <div>Body:</div>
-        <code className="bg-gray-100 h-16">{binData}</code>
-      </div>
-      <div>
-        <div>Init Cell:</div>
-        <code
-          className="bg-gray-100 h-16 overflow-scroll flex"
-          onClick={(e) => window && window.getSelection()?.selectAllChildren(e.target as any)}
-        >
-          {initCell}
-        </code>
-      </div>
+          <div className="space-y-2">
+            <Label htmlFor="body">Body:</Label>
+            <div className="flex items-center gap-2">
+              <Input id="body" value={binData || ''} readOnly />
+              <CopyButton value={binData || ''} />
+            </div>
+          </div>
 
-      <div>
-        <div>Init Code:</div>
-        <code
-          className="bg-gray-100 h-16 overflow-scroll flex"
-          onClick={(e) => window && window.getSelection()?.selectAllChildren(e.target as any)}
-        >
-          {initCode}
-        </code>
-      </div>
+          <div className="space-y-2">
+            <Label htmlFor="initCell">Init Cell:</Label>
+            <div className="flex items-center gap-2">
+              <Input
+                id="initCell"
+                value={initCell || ''}
+                readOnly
+                onClick={(e) => window && window.getSelection()?.selectAllChildren(e.target as any)}
+              />
+              <CopyButton value={initCell || ''} />
+            </div>
+          </div>
 
-      <div>
-        <div>Init Data:</div>
-        <code
-          className="bg-gray-100 h-16 overflow-scroll flex"
-          onClick={(e) => window && window.getSelection()?.selectAllChildren(e.target as any)}
-        >
-          {initData}
-        </code>
-      </div>
-    </div>
+          <div className="space-y-2">
+            <Label htmlFor="initCode">Init Code:</Label>
+            <div className="flex items-center gap-2">
+              <Input
+                id="initCode"
+                value={initCode || ''}
+                readOnly
+                onClick={(e) => window && window.getSelection()?.selectAllChildren(e.target as any)}
+              />
+              <CopyButton value={initCode || ''} />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="initData">Init Data:</Label>
+            <div className="flex items-center gap-2">
+              <Input
+                id="initData"
+                value={initData || ''}
+                readOnly
+                onClick={(e) => window && window.getSelection()?.selectAllChildren(e.target as any)}
+              />
+              <CopyButton value={initData || ''} />
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   )
 }

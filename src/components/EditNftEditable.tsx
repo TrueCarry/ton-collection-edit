@@ -5,6 +5,10 @@ import { useEffect, useMemo, useState } from 'react'
 import { Address, beginCell, Cell, TupleItemInt } from 'ton'
 import { TupleItemCell, TupleItemSlice } from 'ton-core/dist/tuple/tuple'
 import { ResultContainer } from './ResultContainer'
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
+import { Input } from './ui/input'
+import { Button } from './ui/button'
+import { Label } from './ui/label'
 
 interface NftInfo {
   content: string
@@ -53,14 +57,7 @@ export function EditNftEditable() {
       contentInfo.stack.pop(),
       contentInfo.stack.pop(),
       contentInfo.stack.pop(),
-    ] as [
-      TupleItemInt,
-      TupleItemInt,
-      TupleItemInt,
-      TupleItemCell, // cell
-      TupleItemSlice, // slice
-    ]
-    // const content = decodeOffChainContent(nftContent.cell)c
+    ] as [TupleItemInt, TupleItemInt, TupleItemInt, TupleItemCell, TupleItemSlice]
     const content = flattenSnakeCell(nftContent.cell).toString('utf-8')
 
     setNftInfo({
@@ -79,45 +76,38 @@ export function EditNftEditable() {
   }, [nftAddress, nftInfo])
 
   return (
-    <div>
-      <div>Edit Editable Nft</div>
-      <div className="py-2">
-        <div>
-          <label htmlFor="nftAddress">Nft Address:</label>
-          <input
-            className="w-full px-2 py-2 bg-gray-200 rounded"
-            type="text"
-            id="nftAddress"
-            value={nftAddress}
-            onChange={(e) => setNftAddress(e.target.value)}
-          />
-        </div>
-      </div>
-
-      <div className="py-2">
-        <div>
-          <label htmlFor="newContent">New Content:</label>
-          <input
-            className="w-full px-2 py-2 bg-gray-200 rounded"
-            type="text"
-            id="newContent"
-            value={nftInfo.content}
-            onChange={(e) =>
-              setNftInfo({
-                ...nftInfo,
-                content: e.target.value,
-              })
-            }
-          />
-        </div>
-      </div>
-
-      <div className="my-2">
-        <button onClick={updateInfo} className="px-4 py-2 rounded text-white bg-blue-600">
-          Refresh
-        </button>
-      </div>
-
+    <div className="w-full max-w-3xl mx-auto flex flex-col gap-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Edit Editable NFT</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="nftAddress">NFT Address</Label>
+              <Input
+                id="nftAddress"
+                value={nftAddress}
+                onChange={(e) => setNftAddress(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="newContent">New Content</Label>
+              <Input
+                id="newContent"
+                value={nftInfo.content}
+                onChange={(e) =>
+                  setNftInfo({
+                    ...nftInfo,
+                    content: e.target.value,
+                  })
+                }
+              />
+            </div>
+            <Button onClick={updateInfo}>Refresh</Button>
+          </div>
+        </CardContent>
+      </Card>
       <ResultContainer address={nftAddress} cell={editContent} amount={new BN('10000000')} />
     </div>
   )

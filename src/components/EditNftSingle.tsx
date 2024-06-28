@@ -6,6 +6,10 @@ import { useEffect, useMemo, useState } from 'react'
 import { Address, beginCell, Cell, TupleItemInt } from 'ton'
 import { TupleItemCell, TupleItemSlice } from 'ton-core/dist/tuple/tuple'
 import { ResultContainer } from './ResultContainer'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
+import { Input } from './ui/input'
+import { Label } from './ui/label'
+import { Button } from './ui/button'
 
 interface NftInfo {
   content: string
@@ -123,127 +127,117 @@ export function EditNftSingle() {
   }, [nftAddress, nftInfo])
 
   return (
-    <div>
-      <div>
-        Single NFT is nft without collection, meaning it has it's own royalty settings{' '}
-        <a
-          target="_blank"
-          rel="noopener noreferrer"
-          href="https://github.com/getgems-io/nft-contracts/blob/main/packages/contracts/sources/nft-single.fc"
-        >
-          nft-single.fc
-        </a>
-      </div>
-      <div className="py-2">
-        <div>
-          <label htmlFor="nftAddress">Nft Address:</label>
-          <input
-            className="w-full px-2 py-2 bg-gray-200 rounded"
-            type="text"
-            id="nftAddress"
-            value={nftAddress}
-            onChange={(e) => setNftAddress(e.target.value)}
-          />
-        </div>
-      </div>
+    <div className="w-full max-w-3xl mx-auto flex flex-col gap-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Edit Single NFT</CardTitle>
+          <CardDescription>
+            Single NFT is nft without collection, meaning it has its own royalty settings{' '}
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://github.com/getgems-io/nft-contracts/blob/main/packages/contracts/sources/nft-single.fc"
+            >
+              nft-single.fc
+            </a>
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="nftAddress">NFT Address</Label>
+              <Input
+                id="nftAddress"
+                value={nftAddress}
+                onChange={(e) => setNftAddress(e.target.value)}
+              />
+            </div>
 
-      <div className="py-2">
-        <div>
-          <label htmlFor="newContent">New Content:</label>
-          <input
-            className="w-full px-2 py-2 bg-gray-200 rounded"
-            type="text"
-            id="newContent"
-            value={nftInfo.content}
-            onChange={(e) =>
-              setNftInfo({
-                ...nftInfo,
-                content: e.target.value,
-              })
-            }
-          />
-        </div>
+            <div>
+              <Label htmlFor="newContent">New Content</Label>
+              <Input
+                id="newContent"
+                value={nftInfo.content}
+                onChange={(e) =>
+                  setNftInfo({
+                    ...nftInfo,
+                    content: e.target.value,
+                  })
+                }
+              />
+            </div>
 
-        {/* Royalty */}
-        <div>
-          <label htmlFor="royaltyFactor">Collection Royalty Factor:</label>
-          <input
-            className="w-full px-2 py-2 bg-gray-200 rounded"
-            type="text"
-            id="royaltyFactor"
-            value={nftInfo.royalty.royaltyFactor}
-            onChange={(e) =>
-              setNftInfo({
-                ...nftInfo,
-                royalty: {
-                  ...nftInfo.royalty,
-                  royaltyFactor: parseInt(e.target.value) || 0,
-                },
-              })
-            }
-          />
-        </div>
-        <div>
-          <label htmlFor="royaltyBase">Collection Royalty Base:</label>
-          <input
-            className="w-full px-2 py-2 bg-gray-200 rounded"
-            type="text"
-            id="royaltyBase"
-            value={nftInfo.royalty.royaltyBase}
-            onChange={(e) =>
-              setNftInfo({
-                ...nftInfo,
-                royalty: {
-                  ...nftInfo.royalty,
-                  royaltyBase: parseInt(e.target.value) || 0,
-                },
-              })
-            }
-          />
-        </div>
-        <div>
-          <label htmlFor="royaltyResult">Collection Resulting Royalty(Factor/Base):</label>
-          <input
-            className="w-full px-2 py-2 bg-gray-200 rounded"
-            type="text"
-            id="royaltyResult"
-            value={`${nftInfo.royalty.royaltyFactor / nftInfo.royalty.royaltyBase} (${
-              (nftInfo.royalty.royaltyFactor / nftInfo.royalty.royaltyBase) * 100
-            }%)`}
-            disabled
-          />
-        </div>
+            <div>
+              <Label htmlFor="royaltyFactor">Royalty Factor</Label>
+              <Input
+                id="royaltyFactor"
+                type="number"
+                value={nftInfo.royalty.royaltyFactor}
+                onChange={(e) =>
+                  setNftInfo({
+                    ...nftInfo,
+                    royalty: {
+                      ...nftInfo.royalty,
+                      royaltyFactor: parseInt(e.target.value) || 0,
+                    },
+                  })
+                }
+              />
+            </div>
 
-        <div>
-          <label htmlFor="royaltyAddress">Collection Royalty Address:</label>
-          <input
-            className="w-full px-2 py-2 bg-gray-200 rounded"
-            type="text"
-            id="royaltyAddress"
-            value={nftInfo.royalty.royaltyAddress.toString({
-              bounceable: true,
-              urlSafe: true,
-            })}
-            onChange={(e) =>
-              setNftInfo({
-                ...nftInfo,
-                royalty: {
-                  ...nftInfo.royalty,
-                  royaltyAddress: Address.parse(e.target.value),
-                },
-              })
-            }
-          />
-        </div>
-        {/* /Royalty */}
-      </div>
+            <div>
+              <Label htmlFor="royaltyBase">Royalty Base</Label>
+              <Input
+                id="royaltyBase"
+                type="number"
+                value={nftInfo.royalty.royaltyBase}
+                onChange={(e) =>
+                  setNftInfo({
+                    ...nftInfo,
+                    royalty: {
+                      ...nftInfo.royalty,
+                      royaltyBase: parseInt(e.target.value) || 0,
+                    },
+                  })
+                }
+              />
+            </div>
 
-      <div className="my-2">
-        <button onClick={updateInfo} className="px-4 py-2 rounded text-white bg-blue-600">
-          Refresh
-        </button>
-      </div>
+            <div>
+              <Label htmlFor="royaltyResult">Resulting Royalty (Factor/Base)</Label>
+              <Input
+                id="royaltyResult"
+                value={`${nftInfo.royalty.royaltyFactor / nftInfo.royalty.royaltyBase} (${
+                  (nftInfo.royalty.royaltyFactor / nftInfo.royalty.royaltyBase) * 100
+                }%)`}
+                disabled
+              />
+            </div>
 
+            <div>
+              <Label htmlFor="royaltyAddress">Royalty Address</Label>
+              <Input
+                id="royaltyAddress"
+                value={nftInfo.royalty.royaltyAddress.toString({
+                  bounceable: true,
+                  urlSafe: true,
+                })}
+                onChange={(e) =>
+                  setNftInfo({
+                    ...nftInfo,
+                    royalty: {
+                      ...nftInfo.royalty,
+                      royaltyAddress: Address.parse(e.target.value),
+                    },
+                  })
+                }
+              />
+            </div>
+
+            <Button onClick={updateInfo}>Refresh</Button>
+          </div>
+        </CardContent>
+      </Card>
       <ResultContainer address={nftAddress} cell={editContent} amount={new BN('10000000')} />
     </div>
   )

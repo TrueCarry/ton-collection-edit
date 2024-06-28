@@ -106,8 +106,8 @@ export const MintEditableDictValue: DictionaryValue<CollectionEditableMintItemIn
 //  ds~load_ref()  ;; royalty_params
 //  );
 
-export function isNftCollectionNftEditable(data: Cell) {
-  const s = data.asSlice()
+export function isNftCollectionNftEditable(collectionData: Cell) {
+  const s = collectionData.asSlice()
   s.loadRef()
 
   const itemCode = s.loadRef()

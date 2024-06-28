@@ -5,6 +5,11 @@ import { useEffect, useMemo, useState } from 'react'
 import { Address, Cell, TupleItemCell, TupleItemInt } from 'ton'
 import { TupleItemSlice } from 'ton-core/dist/tuple/tuple'
 import { ResultContainer } from './ResultContainer'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
+import { Input } from './ui/input'
+import { Label } from './ui/label'
+import { Button } from './ui/button'
+import { Separator } from './ui/separator'
 
 interface CollectionInfo {
   owner: Address
@@ -33,15 +38,11 @@ export function EditNftCollectionOwner() {
     }
 
     const contentInfo = await tonClient.value.callGetMethod(address, 'get_collection_data')
-    const [, , /* collectionContent */ ownerAddress] = [
+    const [, , ownerAddress] = [
       contentInfo.stack.pop(),
       contentInfo.stack.pop(),
       contentInfo.stack.pop(),
-    ] as [
-      TupleItemInt, // bn
-      TupleItemCell, // cell
-      TupleItemSlice, // slice
-    ]
+    ] as [TupleItemInt, TupleItemCell, TupleItemSlice]
 
     const owner = ownerAddress.cell.beginParse().loadAddress()
     if (!owner) {
@@ -68,29 +69,31 @@ export function EditNftCollectionOwner() {
   }, [collectionInfo])
 
   return (
-    <div className="container mx-auto">
-      <div className="">
-        <div>
-          <label htmlFor="collectionAddress">Collection Address:</label>
-          <input
-            className="w-full px-2 py-2 bg-gray-200 rounded"
-            type="text"
-            id="collectionAddress"
-            value={collectionAddress}
-            onChange={(e) => setCollectionAddress(e.target.value)}
-          />
-        </div>
-      </div>
-      <>
-        <div className="py-2">
-          <div>Collection Info:</div>
-
-          <div>
-            <label htmlFor="royaltyAddress">Collection Owner:</label>
-            <input
-              className="w-full px-2 py-2 bg-gray-200 rounded"
+    <div className="w-full max-w-3xl mx-auto flex flex-col gap-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Edit NFT Collection Owner</CardTitle>
+          <CardDescription>Update the owner of an NFT collection</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="collectionAddress">Collection Address</Label>
+            <Input
+              id="collectionAddress"
               type="text"
-              id="royaltyAddress"
+              value={collectionAddress}
+              onChange={(e) => setCollectionAddress(e.target.value)}
+              placeholder="Enter collection address"
+            />
+          </div>
+
+          <Separator />
+
+          <div className="space-y-2">
+            <Label htmlFor="collectionOwner">Collection Owner</Label>
+            <Input
+              id="collectionOwner"
+              type="text"
               value={collectionInfo.owner.toString({
                 bounceable: true,
                 urlSafe: true,
@@ -103,13 +106,15 @@ export function EditNftCollectionOwner() {
               }
             />
           </div>
-        </div>
-      </>
-      <div className="my-2">
-        <button onClick={updateInfo} className="px-4 py-2 rounded  text-white bg-blue-600">
-          Refresh
-        </button>
-      </div>
+
+          <div className="flex justify-end space-x-2">
+            <Button onClick={updateInfo} variant="outline">
+              Refresh
+            </Button>
+            <Button>Update Owner</Button>
+          </div>
+        </CardContent>
+      </Card>
 
       <ResultContainer address={collectionAddress} cell={editContent} amount={new BN('10000000')} />
     </div>

@@ -10,6 +10,12 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Address, Cell, toNano, TupleItemCell, TupleItemInt } from 'ton-core'
 import { TupleItemSlice } from 'ton-core/dist/tuple/tuple'
 
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
+import { Input } from './ui/input'
+import { Label } from './ui/label'
+import { Button } from './ui/button'
+import { Switch } from './ui/switch'
+
 interface CollectionInfo {
   content: string
   base: string
@@ -18,6 +24,16 @@ interface CollectionInfo {
   nftEditable: boolean
   nextItemIndex: string
 }
+
+interface CollectionInfo {
+  content: string
+  base: string
+  royalty: RoyaltyParams
+  owner: Address
+  nftEditable: boolean
+  nextItemIndex: string
+}
+
 export function DeployNfts() {
   const tonClient = useTonClient()
 
@@ -199,159 +215,132 @@ export function DeployNfts() {
   }, [mintContent])
 
   return (
-    <div className="container mx-auto gap-2 flex flex-col">
-      <div className="">
-        <div className="mb-4">
-          Allows you to mint nfts using batch mint funciton.
-          <br></br>Batch mint allows up to 250 nft minted in one message, but due to network gas
-          limits we should be able to mint around 100 nfts.
-          <br></br>Standard wallet can send up to 4 messages per transaction, so we can effectively
-          mint 4*100 nfts with each transactions
-          <br></br>With this setup you can mint small collections(&lt;5000 nfts) very fast without
-          relying on any automation scripts, so we don't need to ask you for your seed
-          <br></br>Minter can detect if you're using standard nft or standard editable nft and will
-          use correct minting message. If you're using custom nft code results are not guaranteed.
-          <br></br>Minter address is used as nft owner and nft editor.
-        </div>
-        <div>
-          <label htmlFor="collectionAddress">Collection Address:</label>
-          <input
-            className="w-full px-2 py-2 bg-gray-200 rounded"
-            type="text"
+    <Card className="w-full max-w-3xl mx-auto">
+      <CardHeader>
+        <CardTitle>Deploy NFTs</CardTitle>
+        <CardDescription>
+          Mint NFTs using batch mint function. You can mint up to 400 NFTs per transaction.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="collectionAddress">Collection Address</Label>
+          <Input
             id="collectionAddress"
             value={collectionAddress}
             onChange={(e) => setCollectionAddress(e.target.value)}
           />
-        </div>
-      </div>
-
-      <div className="py-2">
-        <div className="flex">
-          <div>
-            <label htmlFor="collectionEditable">Collection Nfts Editable:</label>
-            <input
-              className="ml-2 bg-gray-200 rounded"
-              type="checkbox"
-              id="collectionEditable"
-              checked={collectionInfo?.nftEditable}
-              readOnly
-            />
-          </div>
+          <p className="text-sm text-muted-foreground">
+            Enter the TON address of your NFT collection contract.
+          </p>
         </div>
 
-        <div>
-          <label htmlFor="collectionBase">Collection Base:</label>
-          <input
-            className="w-full px-2 py-2 bg-gray-200 rounded"
-            type="text"
-            id="collectionBase"
-            value={collectionInfo?.base}
-            readOnly
-          />
+        <div className="flex items-center space-x-2">
+          <Switch id="collectionEditable" checked={collectionInfo?.nftEditable} disabled />
+          <Label htmlFor="collectionEditable">Collection NFTs Editable</Label>
         </div>
 
-        <div>
-          <label htmlFor="collectionIndex">Next Item Index:</label>
-          <input
-            className="w-full px-2 py-2 bg-gray-200 rounded"
-            type="text"
-            id="collectionIndex"
-            value={collectionInfo?.nextItemIndex}
-            readOnly
-          />
+        <div className="space-y-2">
+          <Label htmlFor="collectionBase">Collection Base</Label>
+          <Input id="collectionBase" value={collectionInfo?.base} readOnly />
+          <p className="text-sm text-muted-foreground">
+            The base URI for your NFT metadata, automatically fetched from the collection.
+          </p>
         </div>
-      </div>
 
-      <h3 className="font-bold text-lg">Mint settings:</h3>
+        <div className="space-y-2">
+          <Label htmlFor="collectionIndex">Next Item Index</Label>
+          <Input id="collectionIndex" value={collectionInfo?.nextItemIndex} readOnly />
+          <p className="text-sm text-muted-foreground">
+            The index of the next NFT to be minted in this collection.
+          </p>
+        </div>
 
-      <div className="flex">
-        <div>
-          <label htmlFor="mintGram">Initial NFT Balance:</label>
-          <div className="text-sm text-gray-500">
-            0.05 is recommended for normal nfts, but you can use 0.01 for testing purposes
-          </div>
-          <input
-            className="w-full px-2 py-2 bg-gray-200 rounded"
-            type="number"
+        <div className="space-y-2">
+          <Label htmlFor="mintGram">Initial NFT Balance</Label>
+          <Input
             id="mintGram"
+            type="number"
             value={mintGram}
             onChange={(e) => setMintGram(e.target.value)}
           />
+          <p className="text-sm text-muted-foreground">
+            Amount of TON to be stored in each NFT. 0.05 TON is recommended for normal NFTs, but you
+            can use 0.01 TON for testing.
+          </p>
         </div>
-      </div>
 
-      <div className="flex">
-        <div>
-          <label htmlFor="mintStart">Start from:</label>
-          <input
-            className="w-full px-2 py-2 bg-gray-200 rounded"
-            type="number"
+        <div className="space-y-2">
+          <Label htmlFor="mintStart">Start from</Label>
+          <Input
             id="mintStart"
+            type="number"
             value={start}
             onChange={(e) => setStart(parseInt(e.target.value, 10) || 0)}
           />
+          <p className="text-sm text-muted-foreground">
+            The index to start minting from. Automatically set to the next available index in the
+            collection.
+          </p>
         </div>
-      </div>
 
-      <div className="flex">
-        <div>
-          <label htmlFor="batchSize">Batch size:</label>
-          <div className="text-sm text-gray-500">
-            Nfts per message. 100 should work for network, but tonkeeper allows only 50
-          </div>
-          <input
-            className="w-full px-2 py-2 bg-gray-200 rounded"
-            type="number"
+        <div className="space-y-2">
+          <Label htmlFor="batchSize">Batch size</Label>
+          <Input
             id="batchSize"
+            type="number"
             value={batchSize}
             onChange={(e) => setBatchSize(parseInt(e.target.value, 10) || 0)}
           />
+          <p className="text-sm text-muted-foreground">
+            Number of NFTs to mint per message. 100 should work for the network, but some wallets
+            only allow 50.
+          </p>
         </div>
-      </div>
 
-      <div className="flex">
-        <div>
-          <label htmlFor="mintCount">Nfts to mint:</label>
-          <div className="text-sm text-gray-500">
-            Max: 4 * batchSize ({4 * batchSize}). If your wallet (w5 for example) support sending
-            more than 4 messages, you can use more batches
-          </div>
-          <input
-            className="w-full px-2 py-2 bg-gray-200 rounded"
-            type="number"
+        <div className="space-y-2">
+          <Label htmlFor="mintCount">NFTs to mint</Label>
+          <Input
             id="mintCount"
+            type="number"
             value={count}
             onChange={(e) => setCount(parseInt(e.target.value, 10) || 0)}
           />
+          <p className="text-sm text-muted-foreground">
+            Total number of NFTs to mint in this transaction. Maximum is 4 * batch size (
+            {4 * batchSize}). Some wallets may support more.
+          </p>
         </div>
-      </div>
 
-      <div className="flex">
-        <div>
-          <label htmlFor="mintTemplate">
-            Nft content template (replaces {'{id}'} with your nft id):
-          </label>
-          <input
-            className="w-full px-2 py-2 bg-gray-200 rounded"
-            type="text"
+        <div className="space-y-2">
+          <Label htmlFor="mintTemplate">NFT content template</Label>
+          <Input
             id="mintTemplate"
             value={template || ''}
             onChange={(e) => setTemplate(e.target.value)}
           />
-          <div>Last nft example: {replaceId(template, start + count - 1)}</div>
-          <div>
-            Full url (If you click on that url, valid nft metadata should be opened in your
-            browser):{' '}
-            <a href={`${collectionInfo.base}${replaceId(template, start + count - 1)}`}>
-              {replaceId(template, start + count - 1)}
-            </a>
-          </div>
+          <p className="text-sm text-muted-foreground">
+            Template for individual NFT content. Use {'{id}'} as a placeholder for the NFT's index.
+          </p>
         </div>
-      </div>
 
-      <button onClick={sendTx} className="mt-4 px-4 py-2 rounded text-white bg-blue-600 w-32">
-        Send Mint Tx
-      </button>
-    </div>
+        <div className="space-y-2">
+          <Label>Resulting url:</Label>
+          <a
+            href={`${collectionInfo.base}${replaceId(template, start + count - 1)}`}
+            target="_blank"
+            className="text-blue-600 underline ml-2"
+          >
+            {replaceId(template, start + count - 1)}
+          </a>
+          <p className="text-sm text-muted-foreground">
+            If you click on that url, valid nft metadata should be opened in your browser. If you
+            see a 404, make sure you have the right base url and template.
+          </p>
+        </div>
+
+        <Button onClick={sendTx}>Send Transaction</Button>
+      </CardContent>
+    </Card>
   )
 }

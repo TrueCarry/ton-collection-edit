@@ -1,25 +1,35 @@
-import { Queries, RoyaltyParams } from '@/contracts/getgemsCollection/NftCollection.data'
-import { decodeOffChainContent } from '@/contracts/nft-content/nftContent'
-import { useTonClient } from '@/store/tonClient'
+import { Queries } from '@/contracts/getgemsCollection/NftCollection.data'
 import BN from 'bn.js'
 import { useEffect, useMemo, useState } from 'react'
-import { Address, Cell, TupleItemInt } from 'ton-core'
-import { TupleItemCell, TupleItemSlice } from 'ton-core/dist/tuple/tuple'
+import { Address } from 'ton-core'
 import { ResultContainer } from './ResultContainer'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { Input } from './ui/input'
 import { Label } from './ui/label'
 import { Button } from './ui/button'
-
-interface CollectionInfo {
-  content: string
-  base: string
-  royalty: RoyaltyParams
-}
+import {
+  useCollectionRoyaltyParams,
+  useCollectionInfo,
+  useCollectionBaseContent,
+} from '@/hooks/collection'
 
 export function EditNftCollection() {
   const [collectionAddress, setCollectionAddress] = useState('')
-  const [collectionInfo, setCollectionInfo] = useState<CollectionInfo>({
+  const [parsedAddress, setParsedAddress] = useState<Address | null>(null)
+
+  useEffect(() => {
+    try {
+      setParsedAddress(Address.parse(collectionAddress))
+    } catch (e) {
+      setParsedAddress(null)
+    }
+  }, [collectionAddress])
+
+  const royalty = useCollectionRoyaltyParams(parsedAddress)
+  const { content } = useCollectionInfo(parsedAddress)
+  const baseContent = useCollectionBaseContent(parsedAddress)
+
+  const [collectionInfo, setCollectionInfo] = useState(() => ({
     content: '',
     base: '',
     royalty: {
@@ -27,80 +37,27 @@ export function EditNftCollection() {
       royaltyBase: 0,
       royaltyAddress: new Address(0, Buffer.from([])),
     },
-  })
-
-  const tonClient = useTonClient()
-
-  const updateInfo = async () => {
-    setCollectionInfo({
-      content: '',
-      base: '',
-      royalty: {
-        royaltyFactor: 0,
-        royaltyBase: 0,
-        royaltyAddress: new Address(0, Buffer.from([])),
-      },
-    })
-
-    let address: Address
-    try {
-      address = Address.parse(collectionAddress)
-    } catch (e) {
-      return
-    }
-    const info = await tonClient.value.callGetMethod(address, 'royalty_params')
-
-    const [royaltyFactor, royaltyBase, royaltyAddress] = [
-      info.stack.pop(),
-      info.stack.pop(),
-      info.stack.pop(),
-    ] as [TupleItemInt, TupleItemInt, TupleItemSlice]
-    console.log('info', info, royaltyAddress[1])
-    const royaltyOwner = royaltyAddress.cell.beginParse().loadAddress()
-    if (!royaltyOwner) {
-      return
-    }
-
-    const royalty = {
-      royaltyFactor: Number(royaltyFactor.value),
-      royaltyBase: Number(royaltyBase.value),
-      royaltyAddress: royaltyOwner,
-    }
-
-    const contentInfo = await tonClient.value.callGetMethod(address, 'get_collection_data')
-    const [, collectionContent] = [
-      contentInfo.stack.pop(),
-      contentInfo.stack.pop(),
-      contentInfo.stack.pop(),
-    ] as [
-      TupleItemInt, // bn
-      TupleItemCell, // cell
-      TupleItemSlice, // slice
-    ]
-    const content = decodeOffChainContent(collectionContent.cell)
-
-    const baseInfo = await tonClient.value.callGetMethod(address, 'get_nft_content', [
-      {
-        type: 'int',
-        value: 0n,
-      },
-      { type: 'cell', cell: new Cell() },
-      // ['num', '0'],
-      // ['tvm.Cell', new Cell().toBoc({ idx: false }).toString('base64')],
-    ])
-    const baseContent = decodeOffChainContent((baseInfo.stack.pop() as TupleItemCell).cell)
-    console.log('baseInfo', baseInfo, baseContent)
-
-    setCollectionInfo({
-      content,
-      base: baseContent,
-      royalty,
-    })
-  }
+  }))
 
   useEffect(() => {
-    updateInfo()
-  }, [collectionAddress])
+    if (content && baseContent && royalty) {
+      setCollectionInfo({
+        content,
+        base: baseContent,
+        royalty,
+      })
+    } else {
+      setCollectionInfo({
+        content: '',
+        base: '',
+        royalty: {
+          royaltyFactor: 0,
+          royaltyBase: 0,
+          royaltyAddress: new Address(0, Buffer.from([])),
+        },
+      })
+    }
+  }, [content, baseContent, royalty])
 
   const editContent = useMemo(() => {
     return Queries.editContent({
@@ -113,6 +70,11 @@ export function EditNftCollection() {
       },
     })
   }, [collectionInfo])
+
+  const updateInfo = () => {
+    setParsedAddress(null)
+    setParsedAddress(Address.parse(collectionAddress))
+  }
 
   return (
     <div className="w-full max-w-3xl mx-auto flex flex-col gap-4">

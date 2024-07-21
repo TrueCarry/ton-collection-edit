@@ -32,8 +32,9 @@ jobs:
         uses: actions/checkout@v3
       - name: Build
         run: |
-          npm i --force
-          npm run build
+          corepack enable
+          pnpm i
+          pnpm run build
       - name: Setup Pages
         uses: actions/configure-pages@v2
       - name: Upload artifact

@@ -1,6 +1,9 @@
 import { useMemo, useState } from 'react'
 import { beginCell, toNano } from 'ton'
 import { ResultContainer } from './ResultContainer'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
+import { Input } from './ui/input'
+import { Label } from './ui/label'
 
 function ChangeNftSalePriceBody(params: {
   price: bigint
@@ -36,55 +39,67 @@ export function EditNftSalePrice() {
   }, [nftSaleAddress, newPrice, newMarketplaceFee, newRoyaltyAmount])
 
   return (
-    <div>
-      <div>Nft Sale V3R3 allows to change price without redeploy</div>
-      <div className="py-2">
-        <div>
-          <label htmlFor="nftSaleAddress">Nft Sale Address:</label>
-          <input
-            className="w-full px-2 py-2 bg-gray-200 rounded"
-            type="text"
+    <Card className="w-full max-w-3xl mx-auto">
+      <CardHeader>
+        <CardTitle>Edit NFT Sale Price</CardTitle>
+        <CardDescription>
+          Nft Sale V3R3 allows changing the price without redeployment
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="nftSaleAddress">NFT Sale Address</Label>
+          <p className="text-sm text-muted-foreground">
+            Enter the address of the NFT sale contract to be edited.
+          </p>
+          <Input
             id="nftSaleAddress"
             value={nftSaleAddress}
             onChange={(e) => setNftSaleAddress(e.target.value)}
           />
         </div>
-      </div>
 
-      <div className="py-2">
-        <div>
-          <label htmlFor="newPrice">New Price:</label>
-          <input
-            className="w-full px-2 py-2 bg-gray-200 rounded"
-            type="text"
+        <div className="space-y-2">
+          <Label htmlFor="newPrice">New Price</Label>
+          <p className="text-sm text-muted-foreground">
+            Enter the new price for the NFT sale in TON.
+          </p>
+          <Input
             id="newPrice"
+            type="number"
             value={newPrice}
             onChange={(e) => setNewPrice(e.target.value)}
           />
         </div>
-        <div>
-          <label htmlFor="newMarketplaceFee">New Marketplace Fee:</label>
-          <input
-            className="w-full px-2 py-2 bg-gray-200 rounded"
-            type="text"
+
+        <div className="space-y-2">
+          <Label htmlFor="newMarketplaceFee">New Marketplace Fee</Label>
+          <p className="text-sm text-muted-foreground">
+            Enter the new fee for the marketplace in TON.
+          </p>
+          <Input
             id="newMarketplaceFee"
+            type="number"
             value={newMarketplaceFee}
             onChange={(e) => setNewMarketplaceFee(e.target.value)}
           />
         </div>
-        <div>
-          <label htmlFor="newRoyaltyAmount">New Royalty Amount:</label>
-          <input
-            className="w-full px-2 py-2 bg-gray-200 rounded"
-            type="text"
+
+        <div className="space-y-2">
+          <Label htmlFor="newRoyaltyAmount">New Royalty Amount</Label>
+          <p className="text-sm text-muted-foreground">
+            Enter the new royalty amount for the NFT creator in TON.
+          </p>
+          <Input
             id="newRoyaltyAmount"
+            type="number"
             value={newRoyaltyAmount}
             onChange={(e) => setNewRoyaltyAmount(e.target.value)}
           />
         </div>
-      </div>
 
-      <ResultContainer address={nftSaleAddress} cell={updateMessageCell} amount={10000000n} />
-    </div>
+        <ResultContainer address={nftSaleAddress} cell={updateMessageCell} amount={10000000n} />
+      </CardContent>
+    </Card>
   )
 }

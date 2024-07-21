@@ -266,7 +266,7 @@ export function transferJetton(to: Address, from: Address, jettonAmount: bigint)
     .storeAddress(to)
     .storeAddress(from)
     .storeBit(false)
-    .storeCoins(toNano(0.001))
+    .storeCoins(toNano('0.001'))
     .storeBit(false) // forward_payload in this slice, not separate cell
     .endCell()
 }

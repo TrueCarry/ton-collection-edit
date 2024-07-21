@@ -1,8 +1,16 @@
 import { useCallback, useMemo, useState } from 'react'
 import { Address, toNano } from 'ton-core'
-
 import { useTonAddress, useTonConnectUI, useTonWallet } from '@tonconnect/ui-react'
 import { BuildTransferNftBody } from '@/contracts/nftItem/NftItem'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
+import { Input } from './ui/input'
+import { Label } from './ui/label'
+import { Button } from './ui/button'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table'
+
+function truncateAddress(address: string): string {
+  return `${address.slice(0, 6)}...${address.slice(-4)}`
+}
 
 interface SendNftRow {
   nftAddress: string
@@ -10,21 +18,9 @@ interface SendNftRow {
 }
 
 interface TonConnectMessage {
-  /**
-   * Receiver's address.
-   */
   address: string
-  /**
-   * Amount to send in nanoTon.
-   */
   amount: string
-  /**
-   * Contract specific data to add to the transaction.
-   */
   stateInit?: string
-  /**
-   * Contract specific data to add to the transaction.
-   */
   payload?: string
 }
 
@@ -53,9 +49,6 @@ export function parseSendCsv(content: string): SendNftRow[] {
   return nfts
 }
 
-// const NftTransferAmount = 40000000n // 0.04 TON
-// const NftForwardAmount = 10000000n // 0.01 TON
-
 export function SendManyNfts() {
   const [sendCsv, setSendCsv] = useState<SendNftRow[]>([])
   const wallet = useTonWallet()
@@ -83,17 +76,11 @@ export function SendManyNfts() {
         amount: toNano(nftTransferAmount).toString(),
       }
     })
-    // const message = changeAdminBodyJetton(Address.parse(adminAddress))
-
-    // return message
   }, [sendCsv, myAddress, nftTransferAmount, nftForwardAmount])
 
-  const attachFile = async (e) => {
-    const files: File[] = e.target.files
-
-    if (files.length !== 1) {
-      return
-    }
+  const attachFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (!files || files.length !== 1) return
 
     const content = await files[0].text()
 
@@ -110,84 +97,105 @@ export function SendManyNfts() {
       messages: sendList,
       validUntil: Math.floor(Date.now() / 1000) + 300,
     })
-  }, [sendList])
+  }, [sendList, tonConnectUI])
 
   return (
-    <div className="container mx-auto">
-      <div className="flex">
-        <div>
-          <label htmlFor="nftTransferAmount">Amount of TON to send with tx:</label>
-          <input
-            className="w-full px-2 py-2 bg-gray-200 rounded"
-            type="number"
+    <Card className="w-full max-w-3xl mx-auto">
+      <CardHeader>
+        <CardTitle>Send Many NFTs</CardTitle>
+        <CardDescription>Transfer multiple NFTs in a single transaction</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="nftTransferAmount">Amount of TON to send with tx</Label>
+          <Input
             id="nftTransferAmount"
+            type="number"
             value={nftTransferAmount}
             onChange={(e) => setNftTransferAmount(e.target.value)}
           />
         </div>
-      </div>
 
-      <div className="flex">
-        <div>
-          <label htmlFor="nftForwardAmount">Forward amount:</label>
-          <div className="text-sm text-gray-500">
-            Amount of ton that would be send from nft to new owner with notification. Should be less
-            than transfer amount
-          </div>
-          <input
-            className="w-full px-2 py-2 bg-gray-200 rounded"
-            type="number"
+        <div className="space-y-2">
+          <Label htmlFor="nftForwardAmount">Forward amount</Label>
+          <Input
             id="nftForwardAmount"
+            type="number"
             value={nftForwardAmount}
             onChange={(e) => setNftForwardAmount(e.target.value)}
           />
+          <p className="text-sm text-muted-foreground">
+            Amount of TON that would be sent from NFT to new owner with notification. Should be less
+            than transfer amount.
+          </p>
         </div>
-      </div>
 
-      <div>
-        <label htmlFor="sendList">Send List:</label>
-        <input
-          className="w-full px-2 py-2 bg-gray-200 rounded"
-          type="file"
-          id="sendList"
-          onChange={attachFile}
-        />
-      </div>
-
-      {sendList.length && (
-        <div className="flex items-center gap-2">
-          <div>TonConnect:</div>
-          {wallet ? (
-            <button className="px-4 py-2 rounded text-white bg-blue-600" onClick={sendTonConnectTx}>
-              Send Transaction
-            </button>
-          ) : (
-            <div>Connect TonConnect wallet to send tx</div>
-          )}
+        <div className="space-y-2">
+          <Label htmlFor="sendList">Send List</Label>
+          <Input id="sendList" type="file" onChange={attachFile} />
+          <p className="text-sm text-muted-foreground">
+            Upload a CSV file containing NFT addresses and new owner addresses. Format:
+            nft_address,new_owner_address (one per line)
+          </p>
+          <p className="text-sm text-muted-foreground">Example file content:</p>
+          <pre className="text-sm bg-gray-100 p-2 rounded overflow-x-auto">
+            EQCBGq-baE565-7v4-WfG5JOEuVjHI84oipBEe5OopV4KXt0,EQDu6s_r9_wmgWm5QgZuIeLep2fiSg4ijxGcJ0Sw8g4_9gYN
+          </pre>
         </div>
-      )}
 
-      <div>
-        <div>Send List:</div>
-        <table className="border border-gray-500">
-          <thead>
-            <tr>
-              <td className="border border-gray-500 w-8">#</td>
-              <td className="border border-gray-500">Nft</td>
-              <td className="border border-gray-500">New Owner</td>
-            </tr>
-          </thead>
-          <tbody>
-            {sendCsv.map((row, i) => (
-              <tr key={i}>
-                <td className="border border-gray-500">{i}</td>
-                <td className="border border-gray-500">{row.nftAddress}</td>
-                <td className="border border-gray-500">{row.userAddress}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+        {sendList.length > 0 && (
+          <div className="flex items-center gap-2">
+            <div>TonConnect:</div>
+            {wallet ? (
+              <Button onClick={sendTonConnectTx}>Send Transaction</Button>
+            ) : (
+              <div>Connect TonConnect wallet to send tx</div>
+            )}
+          </div>
+        )}
+
+        {sendCsv.length > 0 && (
+          <div>
+            <div>Send List:</div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-16">#</TableHead>
+                  <TableHead>NFT</TableHead>
+                  <TableHead>New Owner</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {sendCsv.map((row, i) => (
+                  <TableRow key={i}>
+                    <TableCell>{i}</TableCell>
+                    <TableCell>
+                      <a
+                        href={`https://tonviewer.com/${row.nftAddress}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 hover:text-blue-600"
+                      >
+                        {truncateAddress(row.nftAddress)}
+                      </a>
+                    </TableCell>
+                    <TableCell>
+                      <a
+                        href={`https://tonviewer.com/${row.userAddress}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 hover:text-blue-600"
+                      >
+                        {truncateAddress(row.userAddress)}
+                      </a>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   )
 }

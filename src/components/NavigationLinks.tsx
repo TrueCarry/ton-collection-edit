@@ -40,6 +40,7 @@ export function NavigationLinks({ currentRoute }: NavigationLinksProps) {
         { to: '/edit-jetton', icon: PenTool, label: 'Edit Jetton' },
         { to: '/edit-jetton-admin', icon: UserCog, label: 'Edit Jetton Admin' },
         { to: '/transfer-jetton', icon: ArrowLeftRight, label: 'Transfer Jetton' },
+        { to: '/user-jettons', icon: Wallet, label: 'Jettons Sender' },
       ],
     },
     {

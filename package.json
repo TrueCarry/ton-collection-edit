@@ -78,6 +78,7 @@
     "ton-contract-executor": "^0.6.2",
     "ton-core": "^0.49.0",
     "ton-crypto": "^3.2.0",
+    "tonapi-sdk-js": "^1.0.15",
     "tweetnacl": "^1.0.3",
     "vaul": "^0.9.1",
     "zod": "^3.23.8"

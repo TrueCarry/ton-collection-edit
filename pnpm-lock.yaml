@@ -212,6 +212,9 @@ dependencies:
   ton-crypto:
     specifier: ^3.2.0
     version: 3.2.0
+  tonapi-sdk-js:
+    specifier: ^1.0.15
+    version: 1.0.15
   tweetnacl:
     specifier: ^1.0.3
     version: 1.0.3
@@ -7216,6 +7219,10 @@ packages:
       ton-crypto: 3.2.0
     transitivePeerDependencies:
       - debug
+
+  /tonapi-sdk-js@1.0.15:
+    resolution: {integrity: sha512-26+1yoi6RIpv72l36SpnxzY2jVU9kTPV222WjdwpIL/7piwI0nigryUbWB6gtOUbmxUkpHOwJe1tXuxDCBrwzw==}
+    dev: false
 
   /totalist@3.0.1:
     resolution: {integrity: sha512-sf4i37nQ2LBx4m3wB74y+ubopq6W/dIzXg0FDGjsYnZHVa1Da8FH853wlL2gtUhg+xJXjfk3kUZS3BRoQeoQBQ==}

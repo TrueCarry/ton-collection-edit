@@ -1,4 +1,4 @@
-import { useTonClient } from '@/store/tonClient'
+import { getTonapi, setTonapiClient, useTonClient } from '@/store/tonClient'
 import { useEffect } from 'react'
 import { TonClient } from 'ton'
 import useLocalStorage from 'react-use-localstorage'
@@ -21,6 +21,8 @@ export function ApiSettings() {
         })
       )
     })
+
+    setTonapiClient(getTonapi(isTestnet === 'true'))
   }, [isTestnet])
 
   return (

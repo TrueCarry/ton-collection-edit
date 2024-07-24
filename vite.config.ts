@@ -12,7 +12,7 @@ export default defineConfig({
   server: {
     port: 3000,
   },
-  base: '/ton-collection-edit/',
+  base: '',
   optimizeDeps: {
     include: ['bn.js'],
     esbuildOptions: {

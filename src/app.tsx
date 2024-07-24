@@ -1,6 +1,6 @@
 import { IndexPage } from '@/components/IndexPage/IndexPage'
 import { TonConnectUIProvider } from '@tonconnect/ui-react'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
 import { MainLayout } from '@/components/MainLayout'
@@ -44,6 +44,12 @@ const router = createBrowserRouter([
 ])
 
 export function App() {
+  useEffect(() => {
+    if (window.location.href === 'https://truecarry.github.io/ton-collection-edit/') {
+      window.location.href = 'https://ton-collection-edit.vercel.app/'
+    }
+  }, [])
+
   return (
     <TonConnectUIProvider
       manifestUrl="https://minter.ton.org/tonconnect-manifest.json"

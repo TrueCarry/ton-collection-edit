@@ -5,6 +5,7 @@ import { useLocation, Outlet } from 'react-router-dom'
 import { NavigationLinks } from './NavigationLinks'
 import { ApiSettings } from './ApiSettings'
 import { TonConnectButton } from '@tonconnect/ui-react'
+import { MouseAnimation } from './MouseAnimation' // Add this import
 
 export function MainLayout() {
   const location = useLocation()
@@ -48,6 +49,7 @@ export function MainLayout() {
         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
           <Outlet />
         </main>
+        <MouseAnimation /> {/* Add this line */}
       </div>
     </div>
   )

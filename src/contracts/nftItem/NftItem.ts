@@ -14,6 +14,7 @@ export function BuildTransferNftBody(params: {
   queryId?: number
   newOwner: Address
   responseTo?: Address
+  customPayload?: Cell
   forwardAmount?: bigint
   forwardPayload?: Cell
 }): Cell {
@@ -22,15 +23,9 @@ export function BuildTransferNftBody(params: {
   msgBody.storeUint(params.queryId || 0, 64)
   msgBody.storeAddress(params.newOwner)
   msgBody.storeAddress(params.responseTo || null)
-  msgBody.storeBit(false) // no custom payload
+  msgBody.storeMaybeRef(params.customPayload || null)
   msgBody.storeCoins(params.forwardAmount || 0)
-
-  if (params.forwardPayload) {
-    // msgBody.storeBit(1)
-    msgBody.storeBuilder(params.forwardPayload.asBuilder())
-  } else {
-    msgBody.storeBit(0) // no forward_payload yet
-  }
+  msgBody.storeMaybeRef(params.forwardPayload || null)
 
   return msgBody.endCell()
 }

@@ -30,6 +30,7 @@ export function NavigationLinks({ currentRoute }: NavigationLinksProps) {
         { to: '/edit-nft-collection', icon: FolderEdit, label: 'Edit NFT Collection' },
         { to: '/edit-nft-collection-owner', icon: UserCog, label: 'Edit NFT Collection Owner' },
         { to: '/edit-nft-sale-price', icon: PenTool, label: 'Edit NFT Sale Price' },
+        { to: '/transfer-nft', icon: Send, label: 'Transfer NFT' },
         { to: '/send-many-nfts', icon: Send, label: 'Send Many NFTs' },
       ],
     },

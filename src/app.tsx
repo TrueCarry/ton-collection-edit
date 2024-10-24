@@ -18,6 +18,7 @@ import { SendManyNfts } from '@/components/SendManyNfts'
 import { DeployVanityContract } from '@/components/DeployVanityContract'
 import { TransferJetton } from '@/components/TransferJetton'
 import { UserJettons } from './components/UserJettons'
+import { TransferNft } from '@/components/TransferNft'
 
 const router = createBrowserRouter([
   {
@@ -39,6 +40,7 @@ const router = createBrowserRouter([
       { path: 'deploy-vanity-contract', element: <DeployVanityContract /> },
       { path: 'transfer-jetton', element: <TransferJetton /> },
       { path: 'user-jettons', element: <UserJettons /> },
+      { path: 'transfer-nft', element: <TransferNft /> },
     ],
   },
 ])

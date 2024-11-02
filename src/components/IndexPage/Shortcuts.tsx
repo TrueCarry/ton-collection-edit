@@ -9,6 +9,7 @@ import {
   UserCog,
   Send,
   FileCode,
+  Transfer,
 } from 'lucide-react'
 
 const ShortcutBox: React.FC<{ href: string; title: string; icon: React.ReactNode }> = ({
@@ -56,6 +57,11 @@ const Shortcuts: React.FC = () => {
           href="/edit-nft-sale-price"
           title="Edit NFT Sale Price"
           icon={<PenTool size={24} />}
+        />
+        <ShortcutBox
+          href="/transfer-nft"
+          title="Transfer NFT"
+          icon={<ArrowRightLeft size={24} />}
         />
         <ShortcutBox href="/send-many-nfts" title="Send Many NFTs" icon={<Send size={24} />} />
         <ShortcutBox href="/deploy-jetton" title="Deploy Jetton" icon={<FileCode size={24} />} />

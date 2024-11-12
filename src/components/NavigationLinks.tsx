@@ -24,6 +24,7 @@ export function NavigationLinks({ currentRoute }: NavigationLinksProps) {
       label: 'NFT',
       children: [
         { to: '/deploy-collection', icon: FolderUp, label: 'Deploy Collection' },
+        { to: '/deploy-nft-single', icon: ImagePlus, label: 'Deploy Single NFT' },
         { to: '/deploy-nfts', icon: ImagePlus, label: 'Deploy NFTs' },
         { to: '/edit-nft-editable', icon: PenTool, label: 'Edit NFT Editable' },
         { to: '/edit-nft-single', icon: PenTool, label: 'Edit NFT Single' },

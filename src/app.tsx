@@ -19,6 +19,7 @@ import { DeployVanityContract } from '@/components/DeployVanityContract'
 import { TransferJetton } from '@/components/TransferJetton'
 import { UserJettons } from './components/UserJettons'
 import { TransferNft } from '@/components/TransferNft'
+import { DeployNftSingle } from './components/DeployNftSingle'
 
 const router = createBrowserRouter([
   {
@@ -28,6 +29,7 @@ const router = createBrowserRouter([
       { index: true, element: <IndexPage /> },
       { path: 'deploy-collection', element: <DeployCollection /> },
       { path: 'deploy-nfts', element: <DeployNfts /> },
+      { path: 'deploy-nft-single', element: <DeployNftSingle /> },
       { path: 'deploy-jetton', element: <DeployJetton /> },
       { path: 'edit-nft-editable', element: <EditNftEditable /> },
       { path: 'edit-nft-single', element: <EditNftSingle /> },

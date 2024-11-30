@@ -17,7 +17,8 @@ export function ApiSettings() {
     }).then((endpoint) => {
       tonClient.set(
         new TonClient({
-          endpoint,
+          endpoint:
+            isTestnet === 'true' ? 'https://testnet.toncenter.com/api/v2/jsonRPC' : endpoint,
         })
       )
     })

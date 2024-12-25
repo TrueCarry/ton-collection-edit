@@ -115,7 +115,11 @@ export function EditNftCollection() {
                 </div>
 
                 {connectedAddress &&
-                  owner?.toString({ urlSafe: true, bounceable: true }) !== connectedAddress && (
+                  owner?.toString({ urlSafe: true, bounceable: true }) !==
+                    Address.parse(connectedAddress).toString({
+                      urlSafe: true,
+                      bounceable: true,
+                    }) && (
                     <div className="space-y-2">
                       <Label htmlFor="collectionOwner">Your Address</Label>
                       <Input

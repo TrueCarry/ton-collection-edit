@@ -12,8 +12,11 @@ import {
   useCollectionInfo,
   useCollectionBaseContent,
 } from '@/hooks/collection'
+import { useTonAddress } from '@tonconnect/ui-react'
 
 export function EditNftCollection() {
+  const connectedAddress = useTonAddress(true)
+
   const [collectionAddress, setCollectionAddress] = useState('')
   const [parsedAddress, setParsedAddress] = useState<Address | null>(null)
 
@@ -38,6 +41,8 @@ export function EditNftCollection() {
       royaltyAddress: new Address(0, Buffer.from([])),
     },
   }))
+
+  const { owner } = useCollectionInfo(parsedAddress)
 
   useEffect(() => {
     if (content && baseContent && royalty) {
@@ -93,6 +98,43 @@ export function EditNftCollection() {
                 placeholder="Enter collection address"
               />
             </div>
+
+            {owner && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="collectionOwner">Collection Owner</Label>
+                  <Input
+                    id="collectionOwner"
+                    type="text"
+                    value={owner.toString({
+                      bounceable: true,
+                      urlSafe: true,
+                    })}
+                    disabled={true}
+                  />
+                </div>
+
+                {connectedAddress &&
+                  owner?.toString({ urlSafe: true, bounceable: true }) !== connectedAddress && (
+                    <div className="space-y-2">
+                      <Label htmlFor="collectionOwner">Your Address</Label>
+                      <Input
+                        id="collectionOwner"
+                        type="text"
+                        value={Address.parse(connectedAddress).toString({
+                          urlSafe: true,
+                          bounceable: true,
+                        })}
+                        disabled={true}
+                      />
+
+                      <Label htmlFor="" className="text-red-500 mt-2">
+                        You're not the owner of this collection. You can't edit it.
+                      </Label>
+                    </div>
+                  )}
+              </>
+            )}
 
             {collectionInfo.base && (
               <>

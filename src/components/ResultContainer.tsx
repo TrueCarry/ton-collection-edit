@@ -1,6 +1,6 @@
 import BN from 'bn.js'
 import { useCallback, useMemo } from 'react'
-import { Cell, loadStateInit } from 'ton'
+import { Address, Cell, loadStateInit } from 'ton'
 import { useTonWallet, useTonConnectUI } from '@tonconnect/ui-react'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -51,7 +51,7 @@ export function ResultContainer({
     tonConnectUI.sendTransaction({
       messages: [
         {
-          address,
+          address: Address.parse(address).toString({ bounceable: true, urlSafe: true }),
           amount: amount.toString(),
           payload: binData,
           stateInit: initCell || undefined,

@@ -102,11 +102,11 @@ dependencies:
     specifier: ^1.1.1
     version: 1.1.1(@types/react-dom@18.2.19)(@types/react@18.2.61)(react-dom@18.2.0)(react@18.2.0)
   '@tonconnect/sdk':
-    specifier: 3.3.0
-    version: 3.3.0
+    specifier: 3.3.1
+    version: 3.3.1
   '@tonconnect/ui-react':
-    specifier: 2.3.0
-    version: 2.3.0(react-dom@18.2.0)(react@18.2.0)
+    specifier: 2.3.1
+    version: 2.3.1(react-dom@18.2.0)(react@18.2.0)
   '@types/bn.js':
     specifier: ^5.1.5
     version: 5.1.5
@@ -2953,8 +2953,8 @@ packages:
       tweetnacl-util: 0.15.1
     dev: false
 
-  /@tonconnect/sdk@3.3.0:
-    resolution: {integrity: sha512-jwO23Uwy13Wht96Xp4euSG3I5fk9rd+3MFk/eXIzI68aznZUiXlDKBHP5l+/w5PJQhULyCkaHB9/UIXZL3DNTg==}
+  /@tonconnect/sdk@3.3.1:
+    resolution: {integrity: sha512-lhXJu95VvbD36u5mMPg2sg+w4GQwkrYnHeJ8rVveu2N7UPwt0jvrEqKlvf7Ss1gh5RDtzs35SS3GbJlaIOAJNA==}
     dependencies:
       '@tonconnect/isomorphic-eventsource': 0.0.2
       '@tonconnect/isomorphic-fetch': 0.0.3
@@ -2963,23 +2963,23 @@ packages:
       - encoding
     dev: false
 
-  /@tonconnect/ui-react@2.3.0(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-Gh25xASc2nmexmCEWWiJKmccgk5MvAym215f/nevB/KMGh7t9COaKZs3dnOs3r3AE4l18asN0kuVAQG4Fcyfaw==}
+  /@tonconnect/ui-react@2.3.1(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-dAMqNG5X8Llh1m3eIOvIQlXgMazrZrmnQGefJmlmyghwwGydR0O9NGpW7I7s2CN24usAaRGX8mVJPemsa2oHSQ==}
     peerDependencies:
       react: '>=17.0.0'
       react-dom: '>=17.0.0'
     dependencies:
-      '@tonconnect/ui': 2.3.0
+      '@tonconnect/ui': 2.3.1
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     transitivePeerDependencies:
       - encoding
     dev: false
 
-  /@tonconnect/ui@2.3.0:
-    resolution: {integrity: sha512-oRcfZHTt5WLXCpXMz0JWWg50Bkx0GiT9JodzT94XuqQdsuLHTUKc0pPqOgvCii98kMRmxhbVu5OiKJIJmdr/6A==}
+  /@tonconnect/ui@2.3.1:
+    resolution: {integrity: sha512-G1hKn5TrqFYztbR94EG8YuhGUpp7wY8PjC1Fu7/d8rFg7XnPGlUcGmuqH8+2lYrb9Ms0M7v6+5U6S4q4+yCQtQ==}
     dependencies:
-      '@tonconnect/sdk': 3.3.0
+      '@tonconnect/sdk': 3.3.1
       classnames: 2.5.1
       csstype: 3.1.3
       deepmerge: 4.3.1

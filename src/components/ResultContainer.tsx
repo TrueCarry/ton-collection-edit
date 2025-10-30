@@ -23,11 +23,15 @@ export function ResultContainer({
   const wallet = useTonWallet()
   const [tonConnectUI] = useTonConnectUI()
   const binData = useMemo(
-    () => cell && cell.toBoc().toString('base64').replace(/\//g, '_').replace(/\+/g, '-'),
+    () =>
+      cell &&
+      cell.toBoc().toString('base64').replace(/\//g, '_').replace(/\+/g, '-').replace(/=/g, ''),
     [cell]
   )
   const initCell = useMemo(
-    () => init && init.toBoc().toString('base64').replace(/\//g, '_').replace(/\+/g, '-'),
+    () =>
+      init &&
+      init.toBoc().toString('base64').replace(/\//g, '_').replace(/\+/g, '-').replace(/=/g, ''),
     [init]
   )
 
@@ -40,10 +44,20 @@ export function ResultContainer({
     return {
       initCode:
         stateInit?.code &&
-        stateInit.code.toBoc().toString('base64').replace(/\//g, '_').replace(/\+/g, '-'),
+        stateInit.code
+          .toBoc()
+          .toString('base64')
+          .replace(/\//g, '_')
+          .replace(/\+/g, '-')
+          .replace(/=/g, ''),
       initData:
         stateInit?.data &&
-        stateInit.data.toBoc().toString('base64').replace(/\//g, '_').replace(/\+/g, '-'),
+        stateInit.data
+          .toBoc()
+          .toString('base64')
+          .replace(/\//g, '_')
+          .replace(/\+/g, '-')
+          .replace(/=/g, ''),
     }
   }, [init])
 

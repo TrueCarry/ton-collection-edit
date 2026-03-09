@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react'
 import { Address, toNano } from 'ton-core'
-import { useTonAddress, useTonConnectUI, useTonWallet } from '@tonconnect/ui-react'
+import { useAddress, useSelectedWallet, useSendTransaction } from '@ton/appkit-react'
 import { BuildTransferNftBody } from '@/contracts/nftItem/NftItem'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
 import { Input } from './ui/input'
@@ -51,9 +51,9 @@ export function parseSendCsv(content: string): SendNftRow[] {
 
 export function SendManyNfts() {
   const [sendCsv, setSendCsv] = useState<SendNftRow[]>([])
-  const wallet = useTonWallet()
-  const myAddress = useTonAddress()
-  const [tonConnectUI] = useTonConnectUI()
+  const [wallet] = useSelectedWallet()
+  const myAddress = useAddress()
+  const { mutate: sendTransaction } = useSendTransaction()
   const [nftTransferAmount, setNftTransferAmount] = useState('0.05')
   const [nftForwardAmount, setNftForwardAmount] = useState('0.01')
 
@@ -68,7 +68,7 @@ export function SendManyNfts() {
           newOwner: Address.parse(row.userAddress),
           forwardAmount: toNano(nftForwardAmount),
           forwardPayload: undefined,
-          responseTo: Address.parse(myAddress),
+          responseTo: Address.parse(myAddress ?? ''),
         })
           .toBoc()
           .toString('base64'),
@@ -93,11 +93,11 @@ export function SendManyNfts() {
   }
 
   const sendTonConnectTx = useCallback(() => {
-    tonConnectUI.sendTransaction({
+    sendTransaction({
       messages: sendList,
       validUntil: Math.floor(Date.now() / 1000) + 300,
     })
-  }, [sendList, tonConnectUI])
+  }, [sendList, sendTransaction])
 
   return (
     <Card className="w-full max-w-3xl mx-auto">

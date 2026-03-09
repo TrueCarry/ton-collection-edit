@@ -1,5 +1,5 @@
 import { BuildTransferNftBody } from '@/contracts/nftItem/NftItem'
-import { useTonAddress } from '@tonconnect/ui-react'
+import { useAddress } from '@ton/appkit-react'
 import BN from 'bn.js'
 import { useEffect, useMemo } from 'react'
 import { Address, Cell } from 'ton-core'
@@ -29,7 +29,7 @@ interface TransferNftFormValues {
 }
 
 export function TransferNft() {
-  const senderAddress = useTonAddress()
+  const senderAddress = useAddress()
   const { toast } = useToast()
 
   const form = useForm<TransferNftFormValues>({
@@ -44,13 +44,7 @@ export function TransferNft() {
     },
   })
 
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setValue,
-    formState: { errors },
-  } = form
+  const { register, handleSubmit, watch, setValue } = form
 
   const nftAddress = watch('nftAddress')
   const queryId = watch('queryId')
@@ -68,7 +62,7 @@ export function TransferNft() {
 
     let sender: Address
     try {
-      sender = Address.parse(senderAddress)
+      sender = Address.parse(senderAddress ?? '')
     } catch (e) {
       return
     }

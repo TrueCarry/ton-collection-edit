@@ -12,10 +12,10 @@ import {
   useCollectionInfo,
   useCollectionBaseContent,
 } from '@/hooks/collection'
-import { useTonAddress } from '@tonconnect/ui-react'
+import { useAddress } from '@ton/appkit-react'
 
 export function EditNftCollection() {
-  const connectedAddress = useTonAddress(true)
+  const connectedAddress = useAddress()
 
   const [collectionAddress, setCollectionAddress] = useState('')
   const [parsedAddress, setParsedAddress] = useState<Address | null>(null)

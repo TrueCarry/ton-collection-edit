@@ -1,7 +1,7 @@
 import BN from 'bn.js'
 import { useCallback, useMemo } from 'react'
 import { Address, Cell, loadStateInit } from 'ton'
-import { useTonWallet, useTonConnectUI } from '@tonconnect/ui-react'
+import { useSelectedWallet, useSendTransaction } from '@ton/appkit-react'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -20,8 +20,8 @@ export function ResultContainer({
   init?: Cell
   amount: BN | bigint
 }) {
-  const wallet = useTonWallet()
-  const [tonConnectUI] = useTonConnectUI()
+  const [wallet] = useSelectedWallet()
+  const { mutate: sendTransaction } = useSendTransaction()
   const binData = useMemo(
     () =>
       cell &&
@@ -62,7 +62,7 @@ export function ResultContainer({
   }, [init])
 
   const sendTonConnectTx = useCallback(() => {
-    tonConnectUI.sendTransaction({
+    sendTransaction({
       messages: [
         {
           address: Address.parse(address).toString({ bounceable: true, urlSafe: true }),
@@ -73,7 +73,7 @@ export function ResultContainer({
       ],
       validUntil: Math.floor(Date.now() / 1000) + 300,
     })
-  }, [address, amount, binData, initCell])
+  }, [address, amount, binData, initCell, sendTransaction])
 
   return (
     <Card>

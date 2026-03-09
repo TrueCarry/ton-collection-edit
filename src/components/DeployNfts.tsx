@@ -3,7 +3,7 @@ import {
   Queries,
 } from '@/contracts/getgemsCollection/NftCollection.data'
 import { useTonClient } from '@/store/tonClient'
-import { useTonConnectUI } from '@tonconnect/ui-react'
+import { useAddress, useSendTransaction } from '@ton/appkit-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Address, Cell, toNano } from 'ton-core'
 
@@ -77,7 +77,8 @@ export function DeployNfts() {
     }
   }, [nextItemIndex])
 
-  const [tonConnectUI] = useTonConnectUI()
+  const connectedAddress = useAddress()
+  const { mutate: sendTxMutate } = useSendTransaction()
 
   const replaceId = (template: string, id: number) => {
     return template.replace(/{id}/g, id.toString())
@@ -91,7 +92,7 @@ export function DeployNfts() {
       return []
     }
 
-    if (!tonConnectUI.account?.address) {
+    if (!connectedAddress) {
       return []
     }
 
@@ -124,8 +125,8 @@ export function DeployNfts() {
                 passAmount: toNano(mintGram),
                 content: replaceId(template || '', i),
                 index: i,
-                ownerAddress: Address.parse(tonConnectUI.account?.address || ''),
-                editorAddress: Address.parse(tonConnectUI.account?.address || ''),
+                ownerAddress: Address.parse(connectedAddress || ''),
+                editorAddress: Address.parse(connectedAddress || ''),
               }
             }),
           })
@@ -135,7 +136,7 @@ export function DeployNfts() {
                 passAmount: toNano(mintGram),
                 content: replaceId(template || '', i),
                 index: i,
-                ownerAddress: Address.parse(tonConnectUI.account?.address || ''),
+                ownerAddress: Address.parse(connectedAddress || ''),
               }
             }),
           })
@@ -149,15 +150,15 @@ export function DeployNfts() {
     }
 
     return messages
-  }, [start, count, template, parsedAddress, tonConnectUI.account, tonClient, mintGram])
+  }, [start, count, template, parsedAddress, connectedAddress, tonClient, mintGram])
 
   const sendTx = useCallback(() => {
-    tonConnectUI.sendTransaction({
+    sendTxMutate({
       messages: mintContent,
       validUntil: Math.floor(Date.now() / 1000) + 300,
     })
     console.log('send message', mintContent)
-  }, [mintContent])
+  }, [mintContent, sendTxMutate])
 
   return (
     <Card className="w-full max-w-3xl mx-auto">

@@ -1,5 +1,7 @@
 import { IndexPage } from '@/components/IndexPage/IndexPage'
-import { TonConnectUIProvider } from '@tonconnect/ui-react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { AppKit, TonConnectConnector, AppKitProvider } from '@ton/appkit-react'
+import '@ton/appkit-react/styles.css'
 import React, { useEffect } from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
@@ -20,6 +22,33 @@ import { TransferJetton } from '@/components/TransferJetton'
 import { UserJettons } from './components/UserJettons'
 import { TransferNft } from '@/components/TransferNft'
 import { DeployNftSingle } from './components/DeployNftSingle'
+
+const queryClient = new QueryClient()
+
+const appKit = new AppKit({
+  connectors: [
+    new TonConnectConnector({
+      tonConnectOptions: {
+        manifestUrl: 'https://minter.ton.org/tonconnect-manifest.json',
+        walletsListConfiguration: {
+          includeWallets: [
+            {
+              name: 'TonDevWallet',
+              aboutUrl: 'https://github.com/tondevwallet/tondevwallet',
+              bridgeUrl: 'https://bridge.tonapi.io/bridge',
+              deepLink: 'tondevwallet://connect/',
+              imageUrl:
+                'https://raw.githubusercontent.com/TonDevWallet/TonDevWallet/main/src-tauri/icons/Square284x284Logo.png',
+              universalLink: 'tondevwallet://connect/',
+              appName: 'TonDevWallet',
+              platforms: ['ios', 'android', 'macos', 'windows', 'linux'],
+            },
+          ],
+        },
+      },
+    }),
+  ],
+})
 
 const router = createBrowserRouter([
   {
@@ -55,27 +84,12 @@ export function App() {
   }, [])
 
   return (
-    <TonConnectUIProvider
-      manifestUrl="https://minter.ton.org/tonconnect-manifest.json"
-      walletsListConfiguration={{
-        includeWallets: [
-          {
-            name: 'TonDevWallet',
-            aboutUrl: 'https://github.com/tondevwallet/tondevwallet',
-            bridgeUrl: 'https://bridge.tonapi.io/bridge',
-            deepLink: 'tondevwallet://connect/',
-            imageUrl:
-              'https://raw.githubusercontent.com/TonDevWallet/TonDevWallet/main/src-tauri/icons/Square284x284Logo.png',
-            universalLink: 'tondevwallet://connect/',
-            appName: 'TonDevWallet',
-            platforms: ['ios', 'android', 'macos', 'windows', 'linux'],
-          },
-        ],
-      }}
-    >
-      <React.Suspense fallback={<div>Loading...</div>}>
-        <RouterProvider router={router} />
-      </React.Suspense>
-    </TonConnectUIProvider>
+    <AppKitProvider appKit={appKit}>
+      <QueryClientProvider client={queryClient}>
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <RouterProvider router={router} />
+        </React.Suspense>
+      </QueryClientProvider>
+    </AppKitProvider>
   )
 }

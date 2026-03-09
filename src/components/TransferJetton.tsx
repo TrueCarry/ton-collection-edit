@@ -1,6 +1,6 @@
 import { storeJettonTransferMessage } from '@/contracts/jetton/jetton-wallet'
 import { useTonClient } from '@/store/tonClient'
-import { useTonAddress } from '@tonconnect/ui-react'
+import { useAddress } from '@ton/appkit-react'
 import { useEffect, useMemo, useState } from 'react'
 import { Address, beginCell, Cell, TupleBuilder } from 'ton-core'
 import { ResultContainer } from './ResultContainer'
@@ -18,7 +18,7 @@ import { useForm } from 'react-hook-form'
 import { useToast } from '@/components/ui/use-toast'
 
 export function TransferJetton() {
-  const senderAddress = useTonAddress()
+  const senderAddress = useAddress()
   const tonClient = useTonClient()
   const { toast } = useToast()
 
@@ -48,7 +48,7 @@ export function TransferJetton() {
 
     let sender: Address
     try {
-      sender = Address.parse(senderAddress)
+      sender = Address.parse(senderAddress ?? '')
     } catch (e) {
       return
     }
@@ -75,7 +75,7 @@ export function TransferJetton() {
 
     let sender: Address
     try {
-      sender = Address.parse(senderAddress)
+      sender = Address.parse(senderAddress ?? '')
     } catch (e) {
       return
     }

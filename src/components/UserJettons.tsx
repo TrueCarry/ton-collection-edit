@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useTonAddress, useTonConnectUI } from '@tonconnect/ui-react'
+import { useAddress, useSendTransaction } from '@ton/appkit-react'
 import { useTonapiClient } from '@/store/tonClient'
 import { Address } from 'ton-core'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -28,8 +28,8 @@ export function UserJettons() {
   const [destinationAddress, setDestinationAddress] = useState('')
   const [transferAmount, setTransferAmount] = useState<bigint>(0n)
   const [useEntireBalance, setUseEntireBalance] = useState(false)
-  const [tonConnectUI] = useTonConnectUI()
-  const userAddress = useTonAddress()
+  const { mutate: sendTransaction } = useSendTransaction()
+  const userAddress = useAddress()
   const tonapi = useTonapiClient()
 
   const sortedJettons = useMemo(() => {
@@ -87,7 +87,7 @@ export function UserJettons() {
 
         const message = transferJetton(
           Address.parse(destinationAddress),
-          Address.parse(userAddress),
+          Address.parse(userAddress ?? ''),
           amount
         )
 
@@ -101,7 +101,7 @@ export function UserJettons() {
 
     if (messages.length === 0) return
 
-    tonConnectUI.sendTransaction({
+    sendTransaction({
       messages,
       validUntil: Math.floor(Date.now() / 1000) + 60,
     })

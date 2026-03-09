@@ -2,7 +2,7 @@ import BN from 'bn.js'
 import { useMemo, useState } from 'react'
 import { Address, Cell, beginCell, contractAddress, storeStateInit } from 'ton-core'
 import { ResultContainer } from './ResultContainer'
-import { useTonAddress } from '@tonconnect/ui-react'
+import { useAddress } from '@ton/appkit-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
 import { Input } from './ui/input'
 import { Label } from './ui/label'
@@ -15,7 +15,7 @@ export function DeployVanityContract() {
   const [salt, setSalt] = useState('')
   const [code, setCode] = useState('')
   const [data, setData] = useState('')
-  const owner = useTonAddress()
+  const owner = useAddress()
 
   const contractData = useMemo(() => {
     if (!owner) {
